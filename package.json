@@ -1,0 +1,26 @@
+{
+  "name": "photon-js",
+  "version": "1.0.0",
+  "description": "Light Weight Javascript Templating Engine",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "serve": "http-server",
+    "watch": "webpack --watch",
+    "start": "webpack-dev-server --output-public-path=/build/"
+  },
+  "keywords": ["Photon-JS", "Photon", "Javascript", "Templating", "Light Weight"],
+  "author": "Phillip Rekhotho",
+  "license": "MIT",
+  "devDependencies": {
+    "ts-loader": "^8.0.4",
+    "typescript": "^4.0.3",
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12"
+  },
+  "dependencies": {
+    "lodash": "^4.17.20",
+    "webpack-dev-server": "^3.11.0"
+  }
+}

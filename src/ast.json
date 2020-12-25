@@ -1,0 +1,797 @@
+{
+    "type": "Program",
+    "children": [{
+        "type": "HtmlElement",
+        "name": "div",
+        "attributes": ["class=\"A\"", "name={{ user.name }}"],
+        "events": [{
+            "type": "Event",
+            "val": "*onclick=\"handler(name, name)\"",
+            "line": 6,
+            "col": 8
+        }],
+        "ifStatement": {
+            "type": "IfStatement",
+            "val": "if=\"777 === 777\"",
+            "line": 5,
+            "col": 8
+        },
+        "EachOf": null,
+        "line": 2,
+        "col": 4,
+        "children": [{
+            "type": "HtmlElement",
+            "name": "input",
+            "attributes": [],
+            "events": [],
+            "ifStatement": null,
+            "EachOf": null,
+            "line": 8,
+            "col": 8,
+            "children": [],
+            "nextSibling": null,
+            "nextElementSibling": null,
+            "isSelfClosing": true
+        }, {
+            "type": "HtmlElement",
+            "name": "div",
+            "attributes": [],
+            "events": [],
+            "ifStatement": {
+                "type": "IfStatement",
+                "val": "if=\"0 === 0\"",
+                "line": 9,
+                "col": 37
+            },
+            "EachOf": {
+                "type": "ForStatement",
+                "val": "for=\"let user of users\"",
+                "line": 9,
+                "col": 13
+            },
+            "line": 9,
+            "col": 8,
+            "children": [{
+                "type": "HtmlElement",
+                "name": "h1",
+                "attributes": [],
+                "events": [],
+                "ifStatement": null,
+                "EachOf": null,
+                "line": 10,
+                "col": 12,
+                "children": [{
+                    "type": "Text",
+                    "val": "content ",
+                    "line": 10,
+                    "col": 16
+                }, {
+                    "type": "DynamicData",
+                    "val": "{{user.name}}",
+                    "line": 10,
+                    "col": 24
+                }, {
+                    "type": "HtmlElement",
+                    "name": "div",
+                    "attributes": [],
+                    "events": [],
+                    "ifStatement": null,
+                    "EachOf": null,
+                    "line": 10,
+                    "col": 37,
+                    "children": [{
+                        "type": "Text",
+                        "val": "hello",
+                        "line": 10,
+                        "col": 42
+                    }],
+                    "nextSibling": null,
+                    "nextElementSibling": null,
+                    "previousElementSibling": {
+                        "type": "HtmlElement",
+                        "name": "input",
+                        "attributes": [],
+                        "events": [],
+                        "ifStatement": null,
+                        "EachOf": null,
+                        "line": 8,
+                        "col": 8,
+                        "children": [],
+                        "nextSibling": null,
+                        "nextElementSibling": null,
+                        "isSelfClosing": true
+                    }
+                }],
+                "nextSibling": null,
+                "nextElementSibling": null,
+                "previousElementSibling": {
+                    "type": "HtmlElement",
+                    "name": "input",
+                    "attributes": [],
+                    "events": [],
+                    "ifStatement": null,
+                    "EachOf": null,
+                    "line": 8,
+                    "col": 8,
+                    "children": [],
+                    "nextSibling": null,
+                    "nextElementSibling": null,
+                    "isSelfClosing": true
+                }
+            }],
+            "nextSibling": null,
+            "nextElementSibling": null,
+            "previousElementSibling": {
+                "type": "HtmlElement",
+                "name": "input",
+                "attributes": [],
+                "events": [],
+                "ifStatement": null,
+                "EachOf": null,
+                "line": 8,
+                "col": 8,
+                "children": [],
+                "nextSibling": null,
+                "nextElementSibling": null,
+                "isSelfClosing": true
+            }
+        }, {
+            "type": "HtmlElement",
+            "name": "div",
+            "attributes": [],
+            "events": [],
+            "ifStatement": {
+                "type": "IfStatement",
+                "val": "if=\"7 === 79\"",
+                "line": 12,
+                "col": 13
+            },
+            "EachOf": {
+                "type": "ForStatement",
+                "val": "for=\"let user of users\"",
+                "line": 12,
+                "col": 27
+            },
+            "line": 12,
+            "col": 8,
+            "children": [{
+                "type": "HtmlElement",
+                "name": "div",
+                "attributes": [],
+                "events": [],
+                "ifStatement": null,
+                "EachOf": null,
+                "line": 13,
+                "col": 12,
+                "children": [{
+                    "type": "DynamicData",
+                    "val": "{{user.name}}",
+                    "line": 13,
+                    "col": 17
+                }],
+                "nextSibling": null,
+                "nextElementSibling": null,
+                "previousElementSibling": {
+                    "type": "HtmlElement",
+                    "name": "div",
+                    "attributes": [],
+                    "events": [],
+                    "ifStatement": {
+                        "type": "IfStatement",
+                        "val": "if=\"0 === 0\"",
+                        "line": 9,
+                        "col": 37
+                    },
+                    "EachOf": {
+                        "type": "ForStatement",
+                        "val": "for=\"let user of users\"",
+                        "line": 9,
+                        "col": 13
+                    },
+                    "line": 9,
+                    "col": 8,
+                    "children": [{
+                        "type": "HtmlElement",
+                        "name": "h1",
+                        "attributes": [],
+                        "events": [],
+                        "ifStatement": null,
+                        "EachOf": null,
+                        "line": 10,
+                        "col": 12,
+                        "children": [{
+                            "type": "Text",
+                            "val": "content ",
+                            "line": 10,
+                            "col": 16
+                        }, {
+                            "type": "DynamicData",
+                            "val": "{{user.name}}",
+                            "line": 10,
+                            "col": 24
+                        }, {
+                            "type": "HtmlElement",
+                            "name": "div",
+                            "attributes": [],
+                            "events": [],
+                            "ifStatement": null,
+                            "EachOf": null,
+                            "line": 10,
+                            "col": 37,
+                            "children": [{
+                                "type": "Text",
+                                "val": "hello",
+                                "line": 10,
+                                "col": 42
+                            }],
+                            "nextSibling": null,
+                            "nextElementSibling": null,
+                            "previousElementSibling": {
+                                "type": "HtmlElement",
+                                "name": "input",
+                                "attributes": [],
+                                "events": [],
+                                "ifStatement": null,
+                                "EachOf": null,
+                                "line": 8,
+                                "col": 8,
+                                "children": [],
+                                "nextSibling": null,
+                                "nextElementSibling": null,
+                                "isSelfClosing": true
+                            }
+                        }],
+                        "nextSibling": null,
+                        "nextElementSibling": null,
+                        "previousElementSibling": {
+                            "type": "HtmlElement",
+                            "name": "input",
+                            "attributes": [],
+                            "events": [],
+                            "ifStatement": null,
+                            "EachOf": null,
+                            "line": 8,
+                            "col": 8,
+                            "children": [],
+                            "nextSibling": null,
+                            "nextElementSibling": null,
+                            "isSelfClosing": true
+                        }
+                    }],
+                    "nextSibling": null,
+                    "nextElementSibling": null,
+                    "previousElementSibling": {
+                        "type": "HtmlElement",
+                        "name": "input",
+                        "attributes": [],
+                        "events": [],
+                        "ifStatement": null,
+                        "EachOf": null,
+                        "line": 8,
+                        "col": 8,
+                        "children": [],
+                        "nextSibling": null,
+                        "nextElementSibling": null,
+                        "isSelfClosing": true
+                    }
+                }
+            }],
+            "nextSibling": null,
+            "nextElementSibling": null,
+            "previousElementSibling": {
+                "type": "HtmlElement",
+                "name": "div",
+                "attributes": [],
+                "events": [],
+                "ifStatement": {
+                    "type": "IfStatement",
+                    "val": "if=\"0 === 0\"",
+                    "line": 9,
+                    "col": 37
+                },
+                "EachOf": {
+                    "type": "ForStatement",
+                    "val": "for=\"let user of users\"",
+                    "line": 9,
+                    "col": 13
+                },
+                "line": 9,
+                "col": 8,
+                "children": [{
+                    "type": "HtmlElement",
+                    "name": "h1",
+                    "attributes": [],
+                    "events": [],
+                    "ifStatement": null,
+                    "EachOf": null,
+                    "line": 10,
+                    "col": 12,
+                    "children": [{
+                        "type": "Text",
+                        "val": "content ",
+                        "line": 10,
+                        "col": 16
+                    }, {
+                        "type": "DynamicData",
+                        "val": "{{user.name}}",
+                        "line": 10,
+                        "col": 24
+                    }, {
+                        "type": "HtmlElement",
+                        "name": "div",
+                        "attributes": [],
+                        "events": [],
+                        "ifStatement": null,
+                        "EachOf": null,
+                        "line": 10,
+                        "col": 37,
+                        "children": [{
+                            "type": "Text",
+                            "val": "hello",
+                            "line": 10,
+                            "col": 42
+                        }],
+                        "nextSibling": null,
+                        "nextElementSibling": null,
+                        "previousElementSibling": {
+                            "type": "HtmlElement",
+                            "name": "input",
+                            "attributes": [],
+                            "events": [],
+                            "ifStatement": null,
+                            "EachOf": null,
+                            "line": 8,
+                            "col": 8,
+                            "children": [],
+                            "nextSibling": null,
+                            "nextElementSibling": null,
+                            "isSelfClosing": true
+                        }
+                    }],
+                    "nextSibling": null,
+                    "nextElementSibling": null,
+                    "previousElementSibling": {
+                        "type": "HtmlElement",
+                        "name": "input",
+                        "attributes": [],
+                        "events": [],
+                        "ifStatement": null,
+                        "EachOf": null,
+                        "line": 8,
+                        "col": 8,
+                        "children": [],
+                        "nextSibling": null,
+                        "nextElementSibling": null,
+                        "isSelfClosing": true
+                    }
+                }],
+                "nextSibling": null,
+                "nextElementSibling": null,
+                "previousElementSibling": {
+                    "type": "HtmlElement",
+                    "name": "input",
+                    "attributes": [],
+                    "events": [],
+                    "ifStatement": null,
+                    "EachOf": null,
+                    "line": 8,
+                    "col": 8,
+                    "children": [],
+                    "nextSibling": null,
+                    "nextElementSibling": null,
+                    "isSelfClosing": true
+                }
+            }
+        }],
+        "nextSibling": null,
+        "nextElementSibling": null
+    }, {
+        "type": "HtmlElement",
+        "name": "div",
+        "attributes": [],
+        "events": [],
+        "ifStatement": {
+            "type": "ElseIfStatement",
+            "val": "else-if=\"4 === 4\"",
+            "line": 16,
+            "col": 9
+        },
+        "EachOf": null,
+        "line": 16,
+        "col": 4,
+        "children": [{
+            "type": "Text",
+            "val": "hello world",
+            "line": 16,
+            "col": 27
+        }],
+        "nextSibling": null,
+        "nextElementSibling": null,
+        "previousElementSibling": {
+            "type": "HtmlElement",
+            "name": "div",
+            "attributes": ["class=\"A\"", "name={{ user.name }}"],
+            "events": [{
+                "type": "Event",
+                "val": "*onclick=\"handler(name, name)\"",
+                "line": 6,
+                "col": 8
+            }],
+            "ifStatement": {
+                "type": "IfStatement",
+                "val": "if=\"777 === 777\"",
+                "line": 5,
+                "col": 8
+            },
+            "EachOf": null,
+            "line": 2,
+            "col": 4,
+            "children": [{
+                "type": "HtmlElement",
+                "name": "input",
+                "attributes": [],
+                "events": [],
+                "ifStatement": null,
+                "EachOf": null,
+                "line": 8,
+                "col": 8,
+                "children": [],
+                "nextSibling": null,
+                "nextElementSibling": null,
+                "isSelfClosing": true
+            }, {
+                "type": "HtmlElement",
+                "name": "div",
+                "attributes": [],
+                "events": [],
+                "ifStatement": {
+                    "type": "IfStatement",
+                    "val": "if=\"0 === 0\"",
+                    "line": 9,
+                    "col": 37
+                },
+                "EachOf": {
+                    "type": "ForStatement",
+                    "val": "for=\"let user of users\"",
+                    "line": 9,
+                    "col": 13
+                },
+                "line": 9,
+                "col": 8,
+                "children": [{
+                    "type": "HtmlElement",
+                    "name": "h1",
+                    "attributes": [],
+                    "events": [],
+                    "ifStatement": null,
+                    "EachOf": null,
+                    "line": 10,
+                    "col": 12,
+                    "children": [{
+                        "type": "Text",
+                        "val": "content ",
+                        "line": 10,
+                        "col": 16
+                    }, {
+                        "type": "DynamicData",
+                        "val": "{{user.name}}",
+                        "line": 10,
+                        "col": 24
+                    }, {
+                        "type": "HtmlElement",
+                        "name": "div",
+                        "attributes": [],
+                        "events": [],
+                        "ifStatement": null,
+                        "EachOf": null,
+                        "line": 10,
+                        "col": 37,
+                        "children": [{
+                            "type": "Text",
+                            "val": "hello",
+                            "line": 10,
+                            "col": 42
+                        }],
+                        "nextSibling": null,
+                        "nextElementSibling": null,
+                        "previousElementSibling": {
+                            "type": "HtmlElement",
+                            "name": "input",
+                            "attributes": [],
+                            "events": [],
+                            "ifStatement": null,
+                            "EachOf": null,
+                            "line": 8,
+                            "col": 8,
+                            "children": [],
+                            "nextSibling": null,
+                            "nextElementSibling": null,
+                            "isSelfClosing": true
+                        }
+                    }],
+                    "nextSibling": null,
+                    "nextElementSibling": null,
+                    "previousElementSibling": {
+                        "type": "HtmlElement",
+                        "name": "input",
+                        "attributes": [],
+                        "events": [],
+                        "ifStatement": null,
+                        "EachOf": null,
+                        "line": 8,
+                        "col": 8,
+                        "children": [],
+                        "nextSibling": null,
+                        "nextElementSibling": null,
+                        "isSelfClosing": true
+                    }
+                }],
+                "nextSibling": null,
+                "nextElementSibling": null,
+                "previousElementSibling": {
+                    "type": "HtmlElement",
+                    "name": "input",
+                    "attributes": [],
+                    "events": [],
+                    "ifStatement": null,
+                    "EachOf": null,
+                    "line": 8,
+                    "col": 8,
+                    "children": [],
+                    "nextSibling": null,
+                    "nextElementSibling": null,
+                    "isSelfClosing": true
+                }
+            }, {
+                "type": "HtmlElement",
+                "name": "div",
+                "attributes": [],
+                "events": [],
+                "ifStatement": {
+                    "type": "IfStatement",
+                    "val": "if=\"7 === 79\"",
+                    "line": 12,
+                    "col": 13
+                },
+                "EachOf": {
+                    "type": "ForStatement",
+                    "val": "for=\"let user of users\"",
+                    "line": 12,
+                    "col": 27
+                },
+                "line": 12,
+                "col": 8,
+                "children": [{
+                    "type": "HtmlElement",
+                    "name": "div",
+                    "attributes": [],
+                    "events": [],
+                    "ifStatement": null,
+                    "EachOf": null,
+                    "line": 13,
+                    "col": 12,
+                    "children": [{
+                        "type": "DynamicData",
+                        "val": "{{user.name}}",
+                        "line": 13,
+                        "col": 17
+                    }],
+                    "nextSibling": null,
+                    "nextElementSibling": null,
+                    "previousElementSibling": {
+                        "type": "HtmlElement",
+                        "name": "div",
+                        "attributes": [],
+                        "events": [],
+                        "ifStatement": {
+                            "type": "IfStatement",
+                            "val": "if=\"0 === 0\"",
+                            "line": 9,
+                            "col": 37
+                        },
+                        "EachOf": {
+                            "type": "ForStatement",
+                            "val": "for=\"let user of users\"",
+                            "line": 9,
+                            "col": 13
+                        },
+                        "line": 9,
+                        "col": 8,
+                        "children": [{
+                            "type": "HtmlElement",
+                            "name": "h1",
+                            "attributes": [],
+                            "events": [],
+                            "ifStatement": null,
+                            "EachOf": null,
+                            "line": 10,
+                            "col": 12,
+                            "children": [{
+                                "type": "Text",
+                                "val": "content ",
+                                "line": 10,
+                                "col": 16
+                            }, {
+                                "type": "DynamicData",
+                                "val": "{{user.name}}",
+                                "line": 10,
+                                "col": 24
+                            }, {
+                                "type": "HtmlElement",
+                                "name": "div",
+                                "attributes": [],
+                                "events": [],
+                                "ifStatement": null,
+                                "EachOf": null,
+                                "line": 10,
+                                "col": 37,
+                                "children": [{
+                                    "type": "Text",
+                                    "val": "hello",
+                                    "line": 10,
+                                    "col": 42
+                                }],
+                                "nextSibling": null,
+                                "nextElementSibling": null,
+                                "previousElementSibling": {
+                                    "type": "HtmlElement",
+                                    "name": "input",
+                                    "attributes": [],
+                                    "events": [],
+                                    "ifStatement": null,
+                                    "EachOf": null,
+                                    "line": 8,
+                                    "col": 8,
+                                    "children": [],
+                                    "nextSibling": null,
+                                    "nextElementSibling": null,
+                                    "isSelfClosing": true
+                                }
+                            }],
+                            "nextSibling": null,
+                            "nextElementSibling": null,
+                            "previousElementSibling": {
+                                "type": "HtmlElement",
+                                "name": "input",
+                                "attributes": [],
+                                "events": [],
+                                "ifStatement": null,
+                                "EachOf": null,
+                                "line": 8,
+                                "col": 8,
+                                "children": [],
+                                "nextSibling": null,
+                                "nextElementSibling": null,
+                                "isSelfClosing": true
+                            }
+                        }],
+                        "nextSibling": null,
+                        "nextElementSibling": null,
+                        "previousElementSibling": {
+                            "type": "HtmlElement",
+                            "name": "input",
+                            "attributes": [],
+                            "events": [],
+                            "ifStatement": null,
+                            "EachOf": null,
+                            "line": 8,
+                            "col": 8,
+                            "children": [],
+                            "nextSibling": null,
+                            "nextElementSibling": null,
+                            "isSelfClosing": true
+                        }
+                    }
+                }],
+                "nextSibling": null,
+                "nextElementSibling": null,
+                "previousElementSibling": {
+                    "type": "HtmlElement",
+                    "name": "div",
+                    "attributes": [],
+                    "events": [],
+                    "ifStatement": {
+                        "type": "IfStatement",
+                        "val": "if=\"0 === 0\"",
+                        "line": 9,
+                        "col": 37
+                    },
+                    "EachOf": {
+                        "type": "ForStatement",
+                        "val": "for=\"let user of users\"",
+                        "line": 9,
+                        "col": 13
+                    },
+                    "line": 9,
+                    "col": 8,
+                    "children": [{
+                        "type": "HtmlElement",
+                        "name": "h1",
+                        "attributes": [],
+                        "events": [],
+                        "ifStatement": null,
+                        "EachOf": null,
+                        "line": 10,
+                        "col": 12,
+                        "children": [{
+                            "type": "Text",
+                            "val": "content ",
+                            "line": 10,
+                            "col": 16
+                        }, {
+                            "type": "DynamicData",
+                            "val": "{{user.name}}",
+                            "line": 10,
+                            "col": 24
+                        }, {
+                            "type": "HtmlElement",
+                            "name": "div",
+                            "attributes": [],
+                            "events": [],
+                            "ifStatement": null,
+                            "EachOf": null,
+                            "line": 10,
+                            "col": 37,
+                            "children": [{
+                                "type": "Text",
+                                "val": "hello",
+                                "line": 10,
+                                "col": 42
+                            }],
+                            "nextSibling": null,
+                            "nextElementSibling": null,
+                            "previousElementSibling": {
+                                "type": "HtmlElement",
+                                "name": "input",
+                                "attributes": [],
+                                "events": [],
+                                "ifStatement": null,
+                                "EachOf": null,
+                                "line": 8,
+                                "col": 8,
+                                "children": [],
+                                "nextSibling": null,
+                                "nextElementSibling": null,
+                                "isSelfClosing": true
+                            }
+                        }],
+                        "nextSibling": null,
+                        "nextElementSibling": null,
+                        "previousElementSibling": {
+                            "type": "HtmlElement",
+                            "name": "input",
+                            "attributes": [],
+                            "events": [],
+                            "ifStatement": null,
+                            "EachOf": null,
+                            "line": 8,
+                            "col": 8,
+                            "children": [],
+                            "nextSibling": null,
+                            "nextElementSibling": null,
+                            "isSelfClosing": true
+                        }
+                    }],
+                    "nextSibling": null,
+                    "nextElementSibling": null,
+                    "previousElementSibling": {
+                        "type": "HtmlElement",
+                        "name": "input",
+                        "attributes": [],
+                        "events": [],
+                        "ifStatement": null,
+                        "EachOf": null,
+                        "line": 8,
+                        "col": 8,
+                        "children": [],
+                        "nextSibling": null,
+                        "nextElementSibling": null,
+                        "isSelfClosing": true
+                    }
+                }
+            }],
+            "nextSibling": null,
+            "nextElementSibling": null
+        }
+    }]
+}
