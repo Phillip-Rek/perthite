@@ -7,7 +7,7 @@ const fs = require("fs")
 app.engine(photon, (err) => console.log("cannot resolve engine \n" + err))
 
 let gb = photon.render({
-    srcFile: __dirname + "/View/main.html"
+    srcFile: __dirname + "/views/main.html"
 }, {
     user: "User-1",
     users: [{
