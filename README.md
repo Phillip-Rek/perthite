@@ -1,4 +1,4 @@
-# Photon-JS
+# <div align="center"> Photon-JS </div>
 
 Photon-JS is a light weight, easy to learn JavaScript templating engine
 that can be used on server with Express as well as on front-end to 
