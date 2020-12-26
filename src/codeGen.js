@@ -3,7 +3,7 @@ exports.__esModule = true;
 exports.render = void 0;
 var parser_1 = require("./parser");
 var lexer_1 = require("./lexer");
-var fs = require('fs');
+var fs = require("fs");
 var templateBuffer = 'let template = \`\`\n';
 var buffer = "";
 var GenerateCode = /** @class */ (function () {
@@ -131,7 +131,15 @@ var GenerateCode = /** @class */ (function () {
     };
     GenerateCode.prototype.visitIfStatement2 = function (node) {
         var statement = node.ifStatement.val;
-        statement = statement.slice(3, -3);
+        if (statement.indexOf("else if(") > -1) {
+            statement = statement.slice(statement.indexOf("else if"), statement.lastIndexOf(")") + 1);
+        }
+        else if (statement.indexOf("else") > -1) {
+            statement = statement.slice(2, -2).trim();
+        }
+        else {
+            statement = statement.slice(statement.indexOf("if"), statement.lastIndexOf(")") + 1);
+        }
         buffer += statement + "{\n";
         node.ifStatement = null;
         this.visitHTMLElement(node);
@@ -149,7 +157,7 @@ var GenerateCode = /** @class */ (function () {
         var variable = statement.slice(statement.indexOf(" "), statement.indexOf("of")).trim();
         var arr = statement.slice(statement.indexOf(" of ") + 4, -1).trim();
         node = this.visitForVariable2(node, variable, arr);
-        buffer += statement + "{";
+        buffer += statement + "{\n";
         this.visitChildren(node);
         buffer += "}\n";
         if (this.data[arr] === undefined)
@@ -176,7 +184,7 @@ var GenerateCode = /** @class */ (function () {
         var variable = statement.slice(statement.indexOf(" "), statement.indexOf("of")).trim();
         var arr = statement.slice(statement.indexOf(" of ") + 4, -1).trim();
         node = this.visitForVariable(node, variable, arr);
-        var forStatement = "for(let i=0;i<" + arr + ".length;i++){";
+        var forStatement = "for(let i=0;i<" + arr + ".length;i++){\n";
         buffer += forStatement + "\n";
         buffer += "let " + variable + " = " + arr + "[i];\n";
         this.visitChildren(node);
@@ -204,32 +212,7 @@ var GenerateCode = /** @class */ (function () {
     };
     GenerateCode.prototype.visitDynamicData = function (node) {
         var val = node.val.slice(2, -2).trim();
-        var replacement = this.dynamicDataHelper(val, node);
-        buffer = buffer.concat("template += \`" + replacement + "\`;\n");
-    };
-    GenerateCode.prototype.dynamicDataHelper = function (identifier, node) {
-        var property = "";
-        var replacement = this.data;
-        for (var i = 0; i <= identifier.length; i++) {
-            var char = identifier[i];
-            switch (char) {
-                case ".":
-                case "[":
-                case "]":
-                case undefined:
-                    if (replacement === undefined) {
-                        this.refErr(node);
-                    }
-                    replacement = property ? replacement[property] : replacement;
-                    property = property ? "" : property;
-                    break;
-                default:
-                    property += char;
-                    break;
-            }
-        }
-        return typeof replacement === "object" ?
-            JSON.stringify(replacement) : replacement;
+        buffer = buffer.concat("template += " + val + ";\n");
     };
     GenerateCode.prototype.refErr = function (node) {
         var msg = node.val +

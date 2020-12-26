@@ -9,22 +9,22 @@ export declare type Token = {
     tagName?: string;
     pos: Pos;
 }
-const ifStatement_Re = /if=["][ \w=<>&.\-_'|]+["]/;
-const ifStatement_Re_2 = /{{ if\([ \w.$\[\]"'=<>+\-,]+\) }}/;
-const elseIfStatement_Re = /else-if=["][ \w=<>&.\-_'|]+["]/;
-const elseIfStatement_Re_2 = /{{ else if\([ \w.$\[\]"'=<>+\-,]+\) }}/;
+const ifStatement_Re = /if=["][ \w=<>&.\-_'"&\(\)\|]+["]/;
+const ifStatement_Re_2 = /{{[ ]*if\([ \w.$\[\]"'=<>+\-,&\(\)\|]+\)[ ]*}}/;
+const elseIfStatement_Re = /else-if=["][ \w=<>&.\-_'"&\(\)\|]+["]/;
+const elseIfStatement_Re_2 = /{{[ ]*else if\([ \w.$\[\]"'=<>+\-,'"&\(\)\|]+\)[ ]*}}/;
 const elseStatement_Re = /else/;
-const elseStatement_Re_2 = "{{ else }}";
+const elseStatement_Re_2 = /{{[ ]*else[ ]*}}/;
 const forStatement_Re = /for=["']let[ \w.$\[\],]+['"]/i;
-const forStatement_Re_2 = /{{ for\(let [a-z0-9_]+ of [ \w.$\[\],]+\) }}/i;
+const forStatement_Re_2 = /{{[ ]*for\(let [a-z0-9_]+ of [ \w.$\[\],]+\)[ ]*}}/i;
 const on_Re = /\*on[a-z]+="[ a-z0-9_\(\).,]+"/i;
 const text_Re = /[ \w"'=\(\)\n\t!&^%$#@\-:_+\\/,.?\[\]>]+/i;
 const openTagStart_Re = /<[-_;:&%$#@+=*\w]+/i;
 const attribute_Re = /[-_:&$#@*\w]+=["|'][ '\w\-_.:&$#@\(\)\{\}*]+['|"]/i;
 const dynamicAttr_Re = /[-_:*a-z0-9]+={{[ a-z0-9._\[\]]+}}/i;
-const css_Re = /style=["|'][a-z\-\;0-9\: ]+['|"]/i;
-const link_Re = /href=["|'][a-z\-\;0-9\://. ]+['|"]/i;
-const dynamicData_Re = /{{[ a-z0-9_.$\[\]]+}}/i;
+const css_Re = /style=["'][a-z\-\;0-9\: ]+['"]/i;
+const link_Re = /href=["'][a-z\-\;0-9\://. ]+['"]/i;
+const dynamicData_Re = /{{[ ]*[a-z0-9_.$\[\]\(\)]+[ ]*}}/i;
 const closeTag_Re = /<\/[-_;:&%$#@+=*\w]+>/i;
 const javascriptSrc_Reg = /<script>[ \w"'=\(\)\n\t!&^%$#@\-:_+\/,.?\[\]><?;]+<\/script>/i;
 export class Lexer {
@@ -170,7 +170,7 @@ export class Lexer {
             }
             else if (this.dynamicData) {
                 let type: string;
-                if (this.dynamicData === "{{ else }}" && this.currentStatus === "attributes") {
+                if (this.dynamicData.search(elseStatement_Re_2) > -1 && this.currentStatus === "attributes") {
                     type = "IfStatement"
                 } else {
                     type = "DynamicData"
@@ -333,8 +333,7 @@ export class Lexer {
             let res = this.input.match(elseStatement_Re)[0];
             return this.input.indexOf(res) === 0 && res;
         }
-        if (this.input.indexOf(elseStatement_Re_2) !== -1) {
-            console.log("***ELSE***")
+        if (this.input.search(elseStatement_Re_2) !== -1) {
             let res = this.input.match(elseStatement_Re_2)[0];
             return this.input.indexOf(res) === 0 && res;
         }

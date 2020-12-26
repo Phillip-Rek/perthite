@@ -12,22 +12,22 @@ var __assign = (this && this.__assign) || function () {
 };
 exports.__esModule = true;
 exports.Lexer = void 0;
-var ifStatement_Re = /if=["][ \w=<>&.\-_'|]+["]/;
-var ifStatement_Re_2 = /{{ if\([ \w.$\[\]"'=<>+\-,]+\) }}/;
-var elseIfStatement_Re = /else-if=["][ \w=<>&.\-_'|]+["]/;
-var elseIfStatement_Re_2 = /{{ else if\([ \w.$\[\]"'=<>+\-,]+\) }}/;
+var ifStatement_Re = /if=["][ \w=<>&.\-_'"&\(\)\|]+["]/;
+var ifStatement_Re_2 = /{{[ ]*if\([ \w.$\[\]"'=<>+\-,&\(\)\|]+\)[ ]*}}/;
+var elseIfStatement_Re = /else-if=["][ \w=<>&.\-_'"&\(\)\|]+["]/;
+var elseIfStatement_Re_2 = /{{[ ]*else if\([ \w.$\[\]"'=<>+\-,'"&\(\)\|]+\)[ ]*}}/;
 var elseStatement_Re = /else/;
-var elseStatement_Re_2 = "{{ else }}";
+var elseStatement_Re_2 = /{{[ ]*else[ ]*}}/;
 var forStatement_Re = /for=["']let[ \w.$\[\],]+['"]/i;
-var forStatement_Re_2 = /{{ for\(let [a-z0-9_]+ of [ \w.$\[\],]+\) }}/i;
+var forStatement_Re_2 = /{{[ ]*for\(let [a-z0-9_]+ of [ \w.$\[\],]+\)[ ]*}}/i;
 var on_Re = /\*on[a-z]+="[ a-z0-9_\(\).,]+"/i;
 var text_Re = /[ \w"'=\(\)\n\t!&^%$#@\-:_+\\/,.?\[\]>]+/i;
 var openTagStart_Re = /<[-_;:&%$#@+=*\w]+/i;
 var attribute_Re = /[-_:&$#@*\w]+=["|'][ '\w\-_.:&$#@\(\)\{\}*]+['|"]/i;
 var dynamicAttr_Re = /[-_:*a-z0-9]+={{[ a-z0-9._\[\]]+}}/i;
-var css_Re = /style=["|'][a-z\-\;0-9\: ]+['|"]/i;
-var link_Re = /href=["|'][a-z\-\;0-9\://. ]+['|"]/i;
-var dynamicData_Re = /{{[ a-z0-9_.$\[\]]+}}/i;
+var css_Re = /style=["'][a-z\-\;0-9\: ]+['"]/i;
+var link_Re = /href=["'][a-z\-\;0-9\://. ]+['"]/i;
+var dynamicData_Re = /{{[ ]*[a-z0-9_.$\[\]\(\)]+[ ]*}}/i;
 var closeTag_Re = /<\/[-_;:&%$#@+=*\w]+>/i;
 var javascriptSrc_Reg = /<script>[ \w"'=\(\)\n\t!&^%$#@\-:_+\/,.?\[\]><?;]+<\/script>/i;
 var Lexer = /** @class */ (function () {
@@ -170,7 +170,7 @@ var Lexer = /** @class */ (function () {
             }
             else if (this.dynamicData) {
                 var type = void 0;
-                if (this.dynamicData === "{{ else }}" && this.currentStatus === "attributes") {
+                if (this.dynamicData.search(elseStatement_Re_2) > -1 && this.currentStatus === "attributes") {
                     type = "IfStatement";
                 }
                 else {
@@ -412,8 +412,7 @@ var Lexer = /** @class */ (function () {
                 var res = this.input.match(elseStatement_Re)[0];
                 return this.input.indexOf(res) === 0 && res;
             }
-            if (this.input.indexOf(elseStatement_Re_2) !== -1) {
-                console.log("***ELSE***");
+            if (this.input.search(elseStatement_Re_2) !== -1) {
                 var res = this.input.match(elseStatement_Re_2)[0];
                 return this.input.indexOf(res) === 0 && res;
             }

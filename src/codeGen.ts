@@ -1,6 +1,6 @@
-import { Parser, ASTElement, simpleASTElement, Program } from './parser';
+import { Parser, ASTElement } from './parser';
 import { Lexer } from './lexer';
-let fs = require('fs');
+import * as fs from "fs"
 
 declare type AstNode = Partial<ASTElement>;
 
@@ -137,7 +137,15 @@ class GenerateCode {
     }
     private visitIfStatement2(node: AstNode) {
         let statement = node.ifStatement.val;
-        statement = statement.slice(3, -3);
+        if (statement.indexOf("else if(") > -1) {
+            statement = statement.slice(statement.indexOf("else if"), statement.lastIndexOf(")") + 1);
+        }
+        else if (statement.indexOf("else") > -1) {
+            statement = statement.slice(2, -2).trim();
+        }
+        else {
+            statement = statement.slice(statement.indexOf("if"), statement.lastIndexOf(")") + 1);
+        }
         buffer += statement + "{\n";
         node.ifStatement = null;
         this.visitHTMLElement(node);
@@ -157,7 +165,7 @@ class GenerateCode {
 
         node = this.visitForVariable2(node, variable, arr);
 
-        buffer += statement + "{"
+        buffer += statement + "{\n"
         this.visitChildren(node);
         buffer += "}\n"
         if (this.data[arr] === undefined) this.data[arr] = []
@@ -184,7 +192,7 @@ class GenerateCode {
         let arr = statement.slice(statement.indexOf(" of ") + 4, -1).trim()
 
         node = this.visitForVariable(node, variable, arr);
-        let forStatement = `for(let i=0;i<${arr}.length;i++){`
+        let forStatement = `for(let i=0;i<${arr}.length;i++){\n`
         buffer += forStatement + "\n";
         buffer += "let " + variable + " = " + arr + "[i];\n"
         this.visitChildren(node);
@@ -211,33 +219,7 @@ class GenerateCode {
     }
     private visitDynamicData(node: AstNode) {
         let val = node.val.slice(2, -2).trim();
-
-        let replacement = this.dynamicDataHelper(val, node)
-        buffer = buffer.concat("template += \`" + replacement + "\`;\n");
-    }
-    private dynamicDataHelper(identifier: string, node: AstNode) {
-        let property: string = "";
-        let replacement = this.data;
-        for (let i = 0; i <= identifier.length; i++) {
-            const char = identifier[i];
-            switch (char) {
-                case ".":
-                case "[":
-                case "]":
-                case undefined:
-                    if (replacement === undefined) {
-                        this.refErr(node)
-                    }
-                    replacement = property ? replacement[property] : replacement;
-                    property = property ? "" : property;
-                    break;
-                default:
-                    property += char;
-                    break;
-            }
-        }
-        return typeof replacement === "object" ?
-            JSON.stringify(replacement) : replacement;
+        buffer = buffer.concat("template += " + val + ";\n");
     }
 
     private refErr(node: AstNode) {
