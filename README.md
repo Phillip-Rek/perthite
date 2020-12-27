@@ -7,7 +7,7 @@ that can be used on server with NodeJs as well as on front-end.
 For now you can download this remote repository to your local machine and start using it right away.
   
 ## Documentation
-Read wiki page for documentation.
+Read wiki page for documentation. [wiki](http://github.com/Phillip-Rek/Photon-JS/wiki)
 
 ## Bug Reporting
 
