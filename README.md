@@ -1,8 +1,7 @@
 # <div align="center"> Photon-JS </div>
 
 Photon-JS is a light weight, easy to learn JavaScript templating engine
-that can be used on server with Express as well as on front-end to 
-dynamically render content with an aid of JavaScript logic.
+that can be used on server with NodeJs as well as on front-end.
 
 ## Installing 
 For now you can download this remote repository to your local machine and start using it right away.
