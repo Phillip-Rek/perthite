@@ -37,8 +37,17 @@ var GenerateCode = /** @class */ (function () {
             var item = data_1[_i];
             var identifier = item[0];
             var expression = item[1];
-            expression = typeof expression === "object" ?
-                JSON.stringify(expression) : "`" + expression + "`";
+            switch (typeof expression) {
+                case "object":
+                    expression = JSON.stringify(expression);
+                    break;
+                case "function":
+                    expression = expression;
+                    break;
+                default:
+                    expression = "`" + expression + "`";
+                    break;
+            }
             buffer += "let " + identifier + " = " + expression + ";\n";
         }
         this.visitChildren(node);

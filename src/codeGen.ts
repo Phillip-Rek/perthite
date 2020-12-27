@@ -39,8 +39,17 @@ class GenerateCode {
         for (const item of data) {
             const identifier = item[0];
             let expression = item[1];
-            expression = typeof expression === "object" ?
-                JSON.stringify(expression) : `\`${expression}\``;
+            switch (typeof expression) {
+                case "object":
+                    expression = JSON.stringify(expression);
+                    break;
+                case "function":
+                    expression = expression;
+                    break;
+                default:
+                    expression = `\`${expression}\``;
+                    break;
+            }
             buffer += `let ${identifier} = ${expression};\n`
         }
         this.visitChildren(node);

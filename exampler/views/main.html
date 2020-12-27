@@ -14,8 +14,7 @@
 <div {{ if(typeof "User-1" === typeof "User-12" ) }}>LAST IF BLOCK</div>
 <div {{ else if("User-1" === "User-1" && 2 === 23 || 1 === 1 && false ) }}>LAST ELSE IF BLOCK 2</div>
 <div {{ else }}>LAST ELSE BLOCK</div>
+{{ concat("hello".toUpperCase(), " WORLD") }}
 <script>
-    document.querySelectorAll('input')[0].onchange = () => {
-        alert(787);
-    }
+    let msg = "hello world"
 </script>

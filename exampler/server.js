@@ -24,8 +24,8 @@ let gb = photon.render({
         [6, 7],
         [8, 9]
     ],
-    capitalize: (param = "") => {
-        return param.toUpperCase()
+    concat: (param = "", param2 = "") => {
+        return param + param2;
     }
 });
 console.log(gb)
