@@ -26,7 +26,7 @@ const css_Re = /style=["'][a-z\-\;0-9\: ]+['"]/i;
 const link_Re = /href=["'][a-z\-\;0-9\://. ]+['"]/i;
 const dynamicData_Re = /{{[ ]*[a-z0-9_.$\[\]\(\)]+[ ]*}}/i;
 const closeTag_Re = /<\/[-_;:&%$#@+=*\w]+>/i;
-const javascriptSrc_Reg = /<script>[ \w"'=\(\)\n\t!&^%$#@\-:_+\/,.?\[\]><?;]+<\/script>/i;
+const javascriptSrc_Reg = /<script>[ \w"'=\(\)\n\t!&^%$#@\-:_<>+\/,.\?\[\]><?;\\]+<\/script>/i;
 export class Lexer {
     private pos: Pos = { col: 1, row: 1 };
     private cursor: number;
@@ -36,14 +36,26 @@ export class Lexer {
         this.cursor = 0;
         for (; ;) {
             if (this.openTagStart) {
-                this.tokens.push({
-                    type: "OpenTagStart",
-                    val: this.openTagStart,
-                    tagName: this.openTagStart.substring(1),
-                    pos: Object.freeze({ ...this.pos })
-                })
-                this.currentStatus = "attributes"
-                this.consume(this.openTagStart)
+                if (this.openTagStart === "<script") {
+                    let jsCodeEnd = this.input.indexOf("</script>", this.cursor)
+                    let jsCode = "\n" + this.input.slice(this.cursor, jsCodeEnd + 9)
+                    this.tokens.push({
+                        type: "Text",
+                        val: jsCode,
+                        pos: Object.freeze({ ...this.pos })
+                    })
+                    this.consume(jsCode)
+                }
+                else {
+                    this.tokens.push({
+                        type: "OpenTagStart",
+                        val: this.openTagStart,
+                        tagName: this.openTagStart.substring(1),
+                        pos: Object.freeze({ ...this.pos })
+                    })
+                    this.currentStatus = "attributes"
+                    this.consume(this.openTagStart)
+                }
             }
             else if (this.dynamicAttr) {
                 this.tokens.push({
@@ -350,10 +362,13 @@ export class Lexer {
         let forStatement = this.input.match(forStatement_Re_2)[0];
         return this.input.indexOf(forStatement) === 0 && forStatement;
     }
-    private get javascriptSrc() {
+    private get lexJSCode() {
         if (this.doesNotContain(javascriptSrc_Reg)) return false;
         let forStatement = this.input.match(forStatement_Re)[0];
         return this.input.indexOf(forStatement) === 0 && forStatement;
+    }
+    private endOfJSCode() {
+
     }
     private get on() {
         if (this.doesNotContain(on_Re)) return false;

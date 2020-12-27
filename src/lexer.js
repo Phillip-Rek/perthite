@@ -29,7 +29,7 @@ var css_Re = /style=["'][a-z\-\;0-9\: ]+['"]/i;
 var link_Re = /href=["'][a-z\-\;0-9\://. ]+['"]/i;
 var dynamicData_Re = /{{[ ]*[a-z0-9_.$\[\]\(\)]+[ ]*}}/i;
 var closeTag_Re = /<\/[-_;:&%$#@+=*\w]+>/i;
-var javascriptSrc_Reg = /<script>[ \w"'=\(\)\n\t!&^%$#@\-:_+\/,.?\[\]><?;]+<\/script>/i;
+var javascriptSrc_Reg = /<script>[ \w"'=\(\)\n\t!&^%$#@\-:_<>+\/,.\?\[\]><?;\\]+<\/script>/i;
 var Lexer = /** @class */ (function () {
     function Lexer(input) {
         this.input = input;
@@ -38,14 +38,26 @@ var Lexer = /** @class */ (function () {
         this.cursor = 0;
         for (;;) {
             if (this.openTagStart) {
-                this.tokens.push({
-                    type: "OpenTagStart",
-                    val: this.openTagStart,
-                    tagName: this.openTagStart.substring(1),
-                    pos: Object.freeze(__assign({}, this.pos))
-                });
-                this.currentStatus = "attributes";
-                this.consume(this.openTagStart);
+                if (this.openTagStart === "<script") {
+                    var jsCodeEnd = this.input.indexOf("</script>", this.cursor);
+                    var jsCode = "\n" + this.input.slice(this.cursor, jsCodeEnd + 9);
+                    this.tokens.push({
+                        type: "Text",
+                        val: jsCode,
+                        pos: Object.freeze(__assign({}, this.pos))
+                    });
+                    this.consume(jsCode);
+                }
+                else {
+                    this.tokens.push({
+                        type: "OpenTagStart",
+                        val: this.openTagStart,
+                        tagName: this.openTagStart.substring(1),
+                        pos: Object.freeze(__assign({}, this.pos))
+                    });
+                    this.currentStatus = "attributes";
+                    this.consume(this.openTagStart);
+                }
             }
             else if (this.dynamicAttr) {
                 this.tokens.push({
@@ -441,7 +453,7 @@ var Lexer = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(Lexer.prototype, "javascriptSrc", {
+    Object.defineProperty(Lexer.prototype, "lexJSCode", {
         get: function () {
             if (this.doesNotContain(javascriptSrc_Reg))
                 return false;
@@ -451,6 +463,8 @@ var Lexer = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Lexer.prototype.endOfJSCode = function () {
+    };
     Object.defineProperty(Lexer.prototype, "on", {
         get: function () {
             if (this.doesNotContain(on_Re))
