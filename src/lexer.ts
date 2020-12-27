@@ -197,20 +197,13 @@ export class Lexer {
                 this.consume(this.dynamicData)
             }
             else if (this.text) {
-                if (this.currentStatus === "innerHTML") {
-                    this.tokens.push({
-                        type: "Text",
-                        val: this.text,
-                        pos: Object.freeze({ ...this.pos })
-                    })
-                } else {
-                    const txt = this.text//.endsWith(">") ? this.text.slice(0, -1) : this.text;
-                    this.tokens.push({
-                        type: "Attribute",
-                        val: txt,
-                        pos: Object.freeze({ ...this.pos })
-                    })
-                }
+                let type = this.currentStatus = "innerHTML" ?
+                    "Text" : "Attribute";
+                this.tokens.push({
+                    type,
+                    val: this.text,
+                    pos: Object.freeze({ ...this.pos })
+                })
                 this.consume(this.text);
             }
             else if (this.closeTag) {
