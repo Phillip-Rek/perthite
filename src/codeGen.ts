@@ -241,7 +241,7 @@ class GenerateCode {
     private refErr(node: AstNode) {
         let msg = node.val +
             " is not defined at line : " +
-            node.line + " col " +
+            node.line + " col: " +
             node.col;
         throw new ReferenceError(msg);
     }

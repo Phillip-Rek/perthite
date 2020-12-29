@@ -242,7 +242,7 @@ var GenerateCode = /** @class */ (function () {
     GenerateCode.prototype.refErr = function (node) {
         var msg = node.val +
             " is not defined at line : " +
-            node.line + " col " +
+            node.line + " col: " +
             node.col;
         throw new ReferenceError(msg);
     };
