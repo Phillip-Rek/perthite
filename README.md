@@ -1,6 +1,6 @@
 # <div align="center"> Photon-JS </div>
 
-Photon-JS is a light weight, easy to learn JavaScript templating engine.
+Photon-JS is a lightweight, easy to learn JavaScript templating engine.
 ## Installing 
 For now you can download this remote repository to your local machine and start using it right away.
   
