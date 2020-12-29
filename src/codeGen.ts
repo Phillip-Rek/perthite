@@ -158,7 +158,7 @@ class GenerateCode {
         buffer += statement + "{\n";
         node.ifStatement = null;
         this.visitHTMLElement(node);
-        buffer += "}\n"
+        buffer += "}\n";
         return true;
     }
     private visitForStatement2(node: AstNode) {
@@ -173,7 +173,6 @@ class GenerateCode {
         let arr = statement.slice(statement.indexOf(" of ") + 4, -1).trim()
 
         node = this.visitForVariable2(node, variable, arr);
-
         buffer += statement + "{\n"
         this.visitChildren(node);
         buffer += "}\n"
@@ -228,15 +227,33 @@ class GenerateCode {
     }
     private visitDynamicData(node: AstNode) {
         let val = node.val.slice(2, -2).trim();
+
+        //get a variable from expression like users[0]
+        let variable = this.extractLocalVariable(val)
+        //check if a variable was declared
+        if (buffer.search(variable) === -1) {
+            this.refErr(node)
+        }
+
         buffer = buffer.concat("template += " + val + ";\n");
     }
 
     private refErr(node: AstNode) {
         let msg = node.val +
-            " is undefined at line : " +
+            " is not defined at line : " +
             node.line + " col " +
             node.col;
         throw new ReferenceError(msg);
+    }
+    private extractLocalVariable = (expression: string) => {
+
+        let variable = "";
+        for (let i = 0; i < expression.length; i++) {
+            let char = expression[i];
+            if (char === "." || char === "[" || char === "(") break;
+            variable += char;
+        }
+        return variable;
     }
 }
 
@@ -248,7 +265,6 @@ export function render(input: { srcFile?: string; template?: string; }, data: {}
     let tokens = new Lexer(tmplt).tokenize();
     let AST = JSON.parse(JSON.stringify(new Parser(tokens).getAST()));
     let template = new GenerateCode(AST, data).compile();
-    //console.log(template)
     let output = new Function(template + "return template;\n")();
     return output;
 }

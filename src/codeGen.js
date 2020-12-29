@@ -8,6 +8,16 @@ var templateBuffer = 'let template = \`\`\n';
 var buffer = "";
 var GenerateCode = /** @class */ (function () {
     function GenerateCode(ast, data) {
+        this.extractLocalVariable = function (expression) {
+            var variable = "";
+            for (var i = 0; i < expression.length; i++) {
+                var char = expression[i];
+                if (char === "." || char === "[" || char === "(")
+                    break;
+                variable += char;
+            }
+            return variable;
+        };
         this.node = ast;
         this.data = data;
         switch (ast.type) {
@@ -221,11 +231,17 @@ var GenerateCode = /** @class */ (function () {
     };
     GenerateCode.prototype.visitDynamicData = function (node) {
         var val = node.val.slice(2, -2).trim();
+        //get a variable from expression like users[0]
+        var variable = this.extractLocalVariable(val);
+        //check if a variable was declared
+        if (buffer.search(variable) === -1) {
+            this.refErr(node);
+        }
         buffer = buffer.concat("template += " + val + ";\n");
     };
     GenerateCode.prototype.refErr = function (node) {
         var msg = node.val +
-            " is undefined at line : " +
+            " is not defined at line : " +
             node.line + " col " +
             node.col;
         throw new ReferenceError(msg);
@@ -240,7 +256,6 @@ function render(input, data) {
     var tokens = new lexer_1.Lexer(tmplt).tokenize();
     var AST = JSON.parse(JSON.stringify(new parser_1.Parser(tokens).getAST()));
     var template = new GenerateCode(AST, data).compile();
-    //console.log(template)
     var output = new Function(template + "return template;\n")();
     return output;
 }
