@@ -165,6 +165,11 @@ export class Parser {
             token.type = "Text"
             return this.parseText(token)
         }
+        if (token.val.startsWith("else-if=")) {
+            let nativeIf = token.val
+            nativeIf = nativeIf.replace(/else-if=["']/, 'else if(').slice(0, -1) + ")"
+            token.val = "{{ " + nativeIf + " }}"
+        }
         let el = this.parseSimpleAstElement(token);
         this.currentNode.ifStatement = el;
     }
@@ -173,6 +178,9 @@ export class Parser {
             token.type = "Text"
             return this.parseText(token)
         }
+        if (token.val === "else")
+            token.val = "{{ " + token.val + " }}"
+
         let el = this.parseSimpleAstElement(token);
         this.currentNode.ifStatement = el;
     }

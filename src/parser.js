@@ -136,6 +136,11 @@ var Parser = /** @class */ (function () {
             token.type = "Text";
             return this.parseText(token);
         }
+        if (token.val.startsWith("else-if=")) {
+            var nativeIf = token.val;
+            nativeIf = nativeIf.replace(/else-if=["']/, 'else if(').slice(0, -1) + ")";
+            token.val = "{{ " + nativeIf + " }}";
+        }
         var el = this.parseSimpleAstElement(token);
         this.currentNode.ifStatement = el;
     };
@@ -144,6 +149,8 @@ var Parser = /** @class */ (function () {
             token.type = "Text";
             return this.parseText(token);
         }
+        if (token.val === "else")
+            token.val = "{{ " + token.val + " }}";
         var el = this.parseSimpleAstElement(token);
         this.currentNode.ifStatement = el;
     };
