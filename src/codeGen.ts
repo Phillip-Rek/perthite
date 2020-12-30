@@ -122,10 +122,8 @@ class GenerateCode {
         })
     }
     private visitIfStatement(node: AstNode) {
-        console.log(node.ifStatement)
         if (!node.ifStatement) return;
         let statement = node.ifStatement.val;
-        console.log("native if statement syntax")
         if (statement.indexOf("else if(") > -1) {
             statement = statement.slice(statement.indexOf("else if"), statement.lastIndexOf(")") + 1);
         }
