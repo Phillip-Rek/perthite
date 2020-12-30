@@ -112,7 +112,7 @@ var Parser = /** @class */ (function () {
         if (!token.val.startsWith("{{")) {
             var nativeFor = token.val.replace(/for=['"]/g, "for(");
             nativeFor = nativeFor.slice(0, -1) + ")";
-            token.val = nativeFor;
+            token.val = "{{ " + nativeFor + " }}";
         }
         var el = this.parseSimpleAstElement(token);
         this.currentNode.ForStatement = el;
