@@ -8,7 +8,7 @@ export declare type ASTElement = {
     parent?: Partial<ASTElement>;
     closeTag?: Partial<ASTElement>
     events?: Array<Partial<ASTElement>>;
-    EachOf?: Partial<ASTElement>;
+    ForStatement?: Partial<ASTElement>;
     rendered?: Boolean;
     currentStatus?: string;
     ifStatement?: simpleASTElement;
@@ -99,7 +99,7 @@ export class Parser {
             events: [],
             currentStatus: "attributes",
             ifStatement: null,
-            EachOf: null,
+            ForStatement: null,
             line: token.pos.row,
             col: token.pos.col,
             children: [],
@@ -138,8 +138,13 @@ export class Parser {
             token.type = "Text"
             return this.parseText(token)
         }
+        if (!token.val.startsWith("{{")) {
+            let nativeFor = token.val.replace(/for=['"]/g, "for(");
+            nativeFor = nativeFor.slice(0, -1) + ")"
+            token.val = nativeFor;
+        }
         let el = this.parseSimpleAstElement(token);
-        this.currentNode.EachOf = el;
+        this.currentNode.ForStatement = el;
     }
     private parseIfStatement(token: Token) {
         if (this.currentNode.currentStatus === "innerHTML") {

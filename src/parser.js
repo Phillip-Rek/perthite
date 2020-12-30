@@ -70,7 +70,7 @@ var Parser = /** @class */ (function () {
             events: [],
             currentStatus: "attributes",
             ifStatement: null,
-            EachOf: null,
+            ForStatement: null,
             line: token.pos.row,
             col: token.pos.col,
             children: [],
@@ -109,8 +109,13 @@ var Parser = /** @class */ (function () {
             token.type = "Text";
             return this.parseText(token);
         }
+        if (!token.val.startsWith("{{")) {
+            var nativeFor = token.val.replace(/for=['"]/g, "for(");
+            nativeFor = nativeFor.slice(0, -1) + ")";
+            token.val = nativeFor;
+        }
         var el = this.parseSimpleAstElement(token);
-        this.currentNode.EachOf = el;
+        this.currentNode.ForStatement = el;
     };
     Parser.prototype.parseIfStatement = function (token) {
         if (this.currentNode.currentStatus === "innerHTML") {
