@@ -92,13 +92,9 @@ class GenerateCode {
         buffer = buffer.concat("template += \`<" + node.name + "\`;\n")
     }
     private vivitAttributes(node: AstNode) {
-        let identifier = /\w={{[a-z0-9._\[\]]+}}/i
-        let identifier2 = /\w={{ [a-z0-9._\[\]]+ }}/i
+        let identifier = /\w={{[ ]*[a-z0-9._\[\]]+[ ]*}}/i
         for (const attr of node.attributes) {
-            if (
-                attr.search(identifier) > -1 ||
-                attr.search(identifier2) > -1
-            ) {
+            if (attr.search(identifier) > -1) {
                 const attrVal = attr.substring(attr.indexOf("=") + 1).trim()
                 const attrKey = attr.substring(0, attr.indexOf("="))
                 buffer = buffer.concat(`template += \` ${attrKey}=\\"\`;\n`)

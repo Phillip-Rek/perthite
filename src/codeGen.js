@@ -97,12 +97,10 @@ var GenerateCode = /** @class */ (function () {
         buffer = buffer.concat("template += \`<" + node.name + "\`;\n");
     };
     GenerateCode.prototype.vivitAttributes = function (node) {
-        var identifier = /\w={{[a-z0-9._\[\]]+}}/i;
-        var identifier2 = /\w={{ [a-z0-9._\[\]]+ }}/i;
+        var identifier = /\w={{[ ]*[a-z0-9._\[\]]+[ ]*}}/i;
         for (var _i = 0, _a = node.attributes; _i < _a.length; _i++) {
             var attr = _a[_i];
-            if (attr.search(identifier) > -1 ||
-                attr.search(identifier2) > -1) {
+            if (attr.search(identifier) > -1) {
                 var attrVal = attr.substring(attr.indexOf("=") + 1).trim();
                 var attrKey = attr.substring(0, attr.indexOf("="));
                 buffer = buffer.concat("template += ` " + attrKey + "=\\\"`;\n");
