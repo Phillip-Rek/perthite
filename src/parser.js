@@ -13,49 +13,9 @@ var Parser = /** @class */ (function () {
         this.unclosedNodes = [this.currentNode];
         for (var i = 0; i < tokens.length; i++) {
             var token = tokens[i];
-            switch (token.type) {
-                case "OpenTagStart":
-                    this.parseOpenTagStart(token);
-                    break;
-                case "SelfClosingTag":
-                    this.parseSelfClosingTag();
-                    break;
-                case "CloseTag":
-                    this.parseCloseTag(token);
-                    break;
-                case "CSS":
-                case "Attribute":
-                    this.parseAttribute(token);
-                    break;
-                case "DynamicAttribute":
-                    this.parseDynamicAttribute(token);
-                    break;
-                case "IfStatement":
-                    this.parseIfStatement(token);
-                    break;
-                case "ElseIfStatement":
-                    this.parseElseIfStatement(token);
-                    break;
-                case "ElseStatement":
-                    this.parseElseStatement(token);
-                    break;
-                case "ForStatement":
-                    this.parseForStatement(token);
-                    break;
-                case "Event":
-                    this.parseEvent(token);
-                    break;
-                case "OpenTagEnd":
-                    this.parseOpenTagEnd();
-                    break;
-                case "DynamicData":
-                    this.parseDynamicData(token);
-                    break;
-                case "Text":
-                    this.parseText(token);
-                    break;
-                default:
-                    break;
+            //@ ts-ignore
+            if (this["parse" + token.type]) {
+                this["parse" + token.type](token);
             }
         }
     }
