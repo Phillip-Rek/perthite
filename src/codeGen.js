@@ -184,21 +184,6 @@ var GenerateCode = /** @class */ (function () {
         this.visitChildren(node);
         buffer += "}\n";
     };
-    GenerateCode.prototype.visitForVariable2 = function (node, variable, arr) {
-        for (var _i = 0, _a = node.children; _i < _a.length; _i++) {
-            var child = _a[_i];
-            switch (child.type) {
-                case "HtmlElement":
-                    this.visitForVariable(child, variable, arr);
-                    break;
-                case "DynamicData":
-                    child.type = "ParsedText";
-                    child.val = child.val.slice(2, -2);
-                    break;
-            }
-        }
-        return node;
-    };
     GenerateCode.prototype.visitForStatement = function (node) {
         if (!node.ForStatement)
             return;

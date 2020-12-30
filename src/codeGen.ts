@@ -180,20 +180,6 @@ class GenerateCode {
         this.visitChildren(node);
         buffer += "}\n"
     }
-    private visitForVariable2(node: AstNode, variable: string, arr: string) {
-        for (const child of node.children) {
-            switch (child.type) {
-                case "HtmlElement":
-                    this.visitForVariable(child, variable, arr);
-                    break;
-                case "DynamicData":
-                    child.type = "ParsedText";
-                    child.val = child.val.slice(2, -2)
-                    break;
-            }
-        }
-        return node;
-    }
     private visitForStatement(node: AstNode) {
         if (!node.ForStatement) return;
 
