@@ -8,6 +8,7 @@ var templateBuffer = 'let template = \`\`\n';
 var buffer = "";
 var GenerateCode = /** @class */ (function () {
     function GenerateCode(ast, data) {
+        this.blockStatementsStack = 0;
         this.extractLocalVariable = function (expression) {
             var variable = "";
             for (var i = 0; i < expression.length; i++) {
@@ -51,6 +52,8 @@ var GenerateCode = /** @class */ (function () {
                 case "object":
                     expression = JSON.stringify(expression);
                     break;
+                case "number":
+                case "boolean":
                 case "function":
                     expression = expression;
                     break;
@@ -82,7 +85,9 @@ var GenerateCode = /** @class */ (function () {
             return buffer = buffer.concat("template += \"/>\";\n");
         //this.visitForStatement(node)
         this.visitForStatement2(node);
-        if (!node.EachOf) {
+        //if an element has a forStatement, then a forStatement
+        //will render it
+        if (!node.ForStatement) {
             buffer = buffer.concat("template += \">\";\n");
             this.visitChildren(node);
         }
@@ -166,40 +171,39 @@ var GenerateCode = /** @class */ (function () {
         return true;
     };
     GenerateCode.prototype.visitForStatement2 = function (node) {
-        if (!node.EachOf)
+        if (!node.ForStatement)
             return;
-        //exclude other syntax
-        if (!node.EachOf.val.startsWith("{{"))
+        //exclude other syntax, since Photon-JS 
+        //support 2 syntax types for this feature
+        if (!node.ForStatement.val.startsWith("{{"))
             return this.visitForStatement(node);
+        //end an open-tag-start
         buffer += "template +=`>`\n";
-        var statement = node.EachOf.val.slice(2, -2).trim();
-        var variable = statement.slice(statement.indexOf(" "), statement.indexOf("of")).trim();
-        var arr = statement.slice(statement.indexOf(" of ") + 4, -1).trim();
-        node = this.visitForVariable2(node, variable, arr);
+        var statement = node.ForStatement.val.slice(2, -2).trim();
         buffer += statement + "{\n";
         this.visitChildren(node);
         buffer += "}\n";
-        if (this.data[arr] === undefined)
-            this.data[arr] = [];
     };
     GenerateCode.prototype.visitForVariable2 = function (node, variable, arr) {
-        var _this = this;
-        node.children.forEach(function (child) {
-            if (child.type === "HtmlElement") {
-                _this.visitForVariable(child, variable, arr);
+        for (var _i = 0, _a = node.children; _i < _a.length; _i++) {
+            var child = _a[_i];
+            switch (child.type) {
+                case "HtmlElement":
+                    this.visitForVariable(child, variable, arr);
+                    break;
+                case "DynamicData":
+                    child.type = "ParsedText";
+                    child.val = child.val.slice(2, -2);
+                    break;
             }
-            else if (child.type === "DynamicData") {
-                child.type = "ParsedText";
-                child.val = child.val.slice(2, -2);
-            }
-        });
+        }
         return node;
     };
     GenerateCode.prototype.visitForStatement = function (node) {
-        if (!node.EachOf)
+        if (!node.ForStatement)
             return;
         buffer += "template +=`>`\n";
-        var statement = node.EachOf.val;
+        var statement = node.ForStatement.val;
         var variable = statement.slice(statement.indexOf(" "), statement.indexOf("of")).trim();
         var arr = statement.slice(statement.indexOf(" of ") + 4, -1).trim();
         node = this.visitForVariable(node, variable, arr);

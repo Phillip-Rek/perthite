@@ -43,6 +43,8 @@ class GenerateCode {
                 case "object":
                     expression = JSON.stringify(expression);
                     break;
+                case "number":
+                case "boolean":
                 case "function":
                     expression = expression;
                     break;
@@ -63,6 +65,7 @@ class GenerateCode {
             new GenerateCode(child, this.data);
         }
     }
+    private blockStatementsStack = 0;
     private visitHTMLElement(node: AstNode) {
         let ifStatement = this.visitIfStatement(node);
         if (ifStatement) return;
@@ -76,7 +79,9 @@ class GenerateCode {
         //this.visitForStatement(node)
         this.visitForStatement2(node)
 
-        if (!node.EachOf) {
+        //if an element has a forStatement, then a forStatement
+        //will render it
+        if (!node.ForStatement) {
             buffer = buffer.concat("template += \">\";\n");
             this.visitChildren(node)
         }
@@ -162,40 +167,39 @@ class GenerateCode {
         return true;
     }
     private visitForStatement2(node: AstNode) {
-        if (!node.EachOf) return;
-        //exclude other syntax
-        if (!node.EachOf.val.startsWith("{{"))
+        if (!node.ForStatement) return;
+        //exclude other syntax, since Photon-JS 
+        //support 2 syntax types for this feature
+        if (!node.ForStatement.val.startsWith("{{"))
             return this.visitForStatement(node);
 
+        //end an open-tag-start
         buffer += `template +=\`>\`\n`;
-        let statement = node.EachOf.val.slice(2, -2).trim();
-        let variable = statement.slice(statement.indexOf(" "), statement.indexOf("of")).trim()
-        let arr = statement.slice(statement.indexOf(" of ") + 4, -1).trim()
-
-        node = this.visitForVariable2(node, variable, arr);
+        let statement = node.ForStatement.val.slice(2, -2).trim();
         buffer += statement + "{\n"
         this.visitChildren(node);
         buffer += "}\n"
-        if (this.data[arr] === undefined) this.data[arr] = []
     }
     private visitForVariable2(node: AstNode, variable: string, arr: string) {
-        node.children.forEach(child => {
-            if (child.type === "HtmlElement") {
-                this.visitForVariable(child, variable, arr)
+        for (const child of node.children) {
+            switch (child.type) {
+                case "HtmlElement":
+                    this.visitForVariable(child, variable, arr);
+                    break;
+                case "DynamicData":
+                    child.type = "ParsedText";
+                    child.val = child.val.slice(2, -2)
+                    break;
             }
-            else if (child.type === "DynamicData") {
-                child.type = "ParsedText";
-                child.val = child.val.slice(2, -2)
-            }
-        })
+        }
         return node;
     }
     private visitForStatement(node: AstNode) {
-        if (!node.EachOf) return;
+        if (!node.ForStatement) return;
 
         buffer += `template +=\`>\`\n`;
 
-        let statement = node.EachOf.val;
+        let statement = node.ForStatement.val;
         let variable = statement.slice(statement.indexOf(" "), statement.indexOf("of")).trim()
         let arr = statement.slice(statement.indexOf(" of ") + 4, -1).trim()
 
