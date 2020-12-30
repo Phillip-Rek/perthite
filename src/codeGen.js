@@ -125,36 +125,11 @@ var GenerateCode = /** @class */ (function () {
         });
     };
     GenerateCode.prototype.visitIfStatement = function (node) {
+        console.log(node.ifStatement);
         if (!node.ifStatement)
-            return false;
-        if (node.ifStatement.val.startsWith("{{"))
-            return this.visitIfStatement2(node);
-        if (node.ifStatement.val.startsWith("if=")) {
-            var statement = node.ifStatement.val;
-            statement = statement.slice(4, -1);
-            buffer += "if(" + statement + "){\n";
-            node.ifStatement = null;
-            this.visitHTMLElement(node);
-            buffer += "}\n";
-        }
-        else if (node.ifStatement.val.startsWith("else-if=")) {
-            var statement = node.ifStatement.val;
-            statement = statement.slice(9, -1);
-            buffer += "else if(" + statement + "){\n";
-            node.ifStatement = null;
-            this.visitHTMLElement(node);
-            buffer += "}\n";
-        }
-        else if (node.ifStatement.val = "else") {
-            buffer += "else{\n";
-            node.ifStatement = null;
-            this.visitHTMLElement(node);
-            buffer += "}\n";
-        }
-        return true;
-    };
-    GenerateCode.prototype.visitIfStatement2 = function (node) {
+            return;
         var statement = node.ifStatement.val;
+        console.log("native if statement syntax");
         if (statement.indexOf("else if(") > -1) {
             statement = statement.slice(statement.indexOf("else if"), statement.lastIndexOf(")") + 1);
         }
@@ -188,7 +163,7 @@ var GenerateCode = /** @class */ (function () {
         //get a variable from expression like users[0]
         var variable = this.extractLocalVariable(val);
         //check if a variable was declared
-        if (buffer.search(variable) === -1) {
+        if (buffer.search("let " + variable) === -1) {
             this.refErr(node);
         }
         buffer = buffer.concat("template += " + val + ";\n");

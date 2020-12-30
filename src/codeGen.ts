@@ -122,35 +122,10 @@ class GenerateCode {
         })
     }
     private visitIfStatement(node: AstNode) {
-        if (!node.ifStatement) return false;
-        if (node.ifStatement.val.startsWith("{{"))
-            return this.visitIfStatement2(node);
-        if (node.ifStatement.val.startsWith("if=")) {
-            let statement = node.ifStatement.val;
-            statement = statement.slice(4, -1);
-            buffer += "if(" + statement + "){\n"
-            node.ifStatement = null;
-            this.visitHTMLElement(node);
-            buffer += "}\n"
-        }
-        else if (node.ifStatement.val.startsWith("else-if=")) {
-            let statement = node.ifStatement.val;
-            statement = statement.slice(9, -1);
-            buffer += "else if(" + statement + "){\n"
-            node.ifStatement = null;
-            this.visitHTMLElement(node);
-            buffer += "}\n"
-        }
-        else if (node.ifStatement.val = "else") {
-            buffer += "else{\n";
-            node.ifStatement = null;
-            this.visitHTMLElement(node);
-            buffer += "}\n"
-        }
-        return true;
-    }
-    private visitIfStatement2(node: AstNode) {
+        console.log(node.ifStatement)
+        if (!node.ifStatement) return;
         let statement = node.ifStatement.val;
+        console.log("native if statement syntax")
         if (statement.indexOf("else if(") > -1) {
             statement = statement.slice(statement.indexOf("else if"), statement.lastIndexOf(")") + 1);
         }
@@ -185,7 +160,7 @@ class GenerateCode {
         //get a variable from expression like users[0]
         let variable = this.extractLocalVariable(val)
         //check if a variable was declared
-        if (buffer.search(variable) === -1) {
+        if (buffer.search("let " + variable) === -1) {
             this.refErr(node)
         }
 
