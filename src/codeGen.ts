@@ -120,16 +120,21 @@ class GenerateCode {
     private visitIfStatement(node: AstNode) {
         if (!node.ifStatement) return;
         let statement = node.ifStatement.val;
-        if (statement.indexOf("else if(") > -1) {
-            statement = statement.slice(statement.indexOf("else if"), statement.lastIndexOf(")") + 1);
+        if (statement.search(/{{[ ]*else if\(/) === 0) {
+            let start = statement.indexOf("else if");
+            let end = statement.lastIndexOf(")") + 1;
+            statement = statement.slice(start, end);
         }
-        else if (statement.indexOf("else") > -1) {
+        else if (statement.search(/{{[ ]*else[ ]*}}/) === 0) {
             statement = statement.slice(2, -2).trim();
         }
         else {
-            statement = statement.slice(statement.indexOf("if"), statement.lastIndexOf(")") + 1);
+            let start = statement.indexOf("if");
+            let end = statement.lastIndexOf(")") + 1;
+            statement = statement.slice(start, end);
         }
         buffer += statement + "{\n";
+        //remove ifStatement to avoid recursion
         node.ifStatement = null;
         this.visitHTMLElement(node);
         buffer += "}\n";
@@ -188,6 +193,10 @@ export function render(input: { srcFile?: string; template?: string; }, data: {}
     let tokens = new Lexer(tmplt).tokenize();
     let AST = JSON.parse(JSON.stringify(new Parser(tokens).getAST()));
     let template = new GenerateCode(AST, data).compile();
+
+    fs.writeFileSync(__dirname + '/template.js', template, "utf8")
+
+
     let output = new Function(template + "return template;\n")();
     return output;
 }
