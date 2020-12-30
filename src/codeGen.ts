@@ -168,48 +168,12 @@ class GenerateCode {
     }
     private visitForStatement2(node: AstNode) {
         if (!node.ForStatement) return;
-        //exclude other syntax, since Photon-JS 
-        //support 2 syntax types for this feature
-        if (!node.ForStatement.val.startsWith("{{"))
-            return this.visitForStatement(node);
-
         //end an open-tag-start
         buffer += `template +=\`>\`\n`;
         let statement = node.ForStatement.val.slice(2, -2).trim();
         buffer += statement + "{\n"
         this.visitChildren(node);
         buffer += "}\n"
-    }
-    private visitForStatement(node: AstNode) {
-        if (!node.ForStatement) return;
-
-        buffer += `template +=\`>\`\n`;
-
-        let statement = node.ForStatement.val;
-        let variable = statement.slice(statement.indexOf(" "), statement.indexOf("of")).trim()
-        let arr = statement.slice(statement.indexOf(" of ") + 4, -1).trim()
-
-        node = this.visitForVariable(node, variable, arr);
-        let forStatement = `for(let i=0;i<${arr}.length;i++){\n`
-        buffer += forStatement + "\n";
-        buffer += "let " + variable + " = " + arr + "[i];\n"
-        this.visitChildren(node);
-        buffer += `}\n`;
-        if (this.data[arr] === undefined) this.data[arr] = []
-    }
-    private visitForVariable(node: AstNode, variable: string, arr: any) {
-        node.children.forEach(child => {
-            if (child.type === "HtmlElement") {
-                this.visitForVariable(child, variable, arr)
-            }
-            else if (child.type === "DynamicData") {
-                if (child.val.search(`{{${arr}`) !== 0) {
-                    child.type = "ParsedText";
-                    child.val = child.val.slice(2, -2)
-                }
-            }
-        })
-        return node;
     }
 
     private visitText(node: AstNode) {
