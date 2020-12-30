@@ -83,31 +83,27 @@ var Parser = /** @class */ (function () {
         this.currentNode = el;
     };
     Parser.prototype.parseAttribute = function (token) {
-        if (this.currentNode.currentStatus === "innerHTML") {
-            token.type = "Text";
-            return this.parseText(token);
+        if (this.afterOpTagEnd) {
+            return this.parseAsInnerHTML(token);
         }
         this.currentNode.attributes.push(token.val);
     };
     Parser.prototype.parseDynamicAttribute = function (token) {
-        if (this.currentNode.currentStatus === "innerHTML") {
-            token.type = "Text";
-            return this.parseText(token);
+        if (this.afterOpTagEnd) {
+            return this.parseAsInnerHTML(token);
         }
         this.currentNode.attributes.push(token.val);
     };
     Parser.prototype.parseEvent = function (token) {
-        if (this.currentNode.currentStatus === "innerHTML") {
-            token.type = "Text";
-            return this.parseText(token);
+        if (this.afterOpTagEnd) {
+            return this.parseAsInnerHTML(token);
         }
         var el = this.parseSimpleAstElement(token);
         this.currentNode.events.push(el);
     };
     Parser.prototype.parseForStatement = function (token) {
-        if (this.currentNode.currentStatus === "innerHTML") {
-            token.type = "Text";
-            return this.parseText(token);
+        if (this.afterOpTagEnd) {
+            return this.parseAsInnerHTML(token);
         }
         if (!token.val.startsWith("{{")) {
             var nativeFor = token.val.replace(/for=['"]/g, "for(");
@@ -118,9 +114,8 @@ var Parser = /** @class */ (function () {
         this.currentNode.ForStatement = el;
     };
     Parser.prototype.parseIfStatement = function (token) {
-        if (this.currentNode.currentStatus === "innerHTML") {
-            token.type = "Text";
-            return this.parseText(token);
+        if (this.afterOpTagEnd) {
+            return this.parseAsInnerHTML(token);
         }
         //transforming non-native tyntax to natice syntax
         if (token.val.startsWith("if=")) {
@@ -132,9 +127,8 @@ var Parser = /** @class */ (function () {
         this.currentNode.ifStatement = el;
     };
     Parser.prototype.parseElseIfStatement = function (token) {
-        if (this.currentNode.currentStatus === "innerHTML") {
-            token.type = "Text";
-            return this.parseText(token);
+        if (this.afterOpTagEnd) {
+            return this.parseAsInnerHTML(token);
         }
         if (token.val.startsWith("else-if=")) {
             var nativeIf = token.val;
@@ -145,12 +139,12 @@ var Parser = /** @class */ (function () {
         this.currentNode.ifStatement = el;
     };
     Parser.prototype.parseElseStatement = function (token) {
-        if (this.currentNode.currentStatus === "innerHTML") {
-            token.type = "Text";
-            return this.parseText(token);
+        if (this.afterOpTagEnd) {
+            return this.parseAsInnerHTML(token);
         }
-        if (token.val === "else")
+        if (token.val === "else") {
             token.val = "{{ " + token.val + " }}";
+        }
         var el = this.parseSimpleAstElement(token);
         this.currentNode.ifStatement = el;
     };
@@ -162,17 +156,9 @@ var Parser = /** @class */ (function () {
             col: token.pos.col
         };
     };
-    Parser.prototype.parseOpenTagEnd = function () {
-        this.currentNode.currentStatus = "innerHTML";
-    };
+    Parser.prototype.parseOpenTagEnd = function () { this.currentNode.currentStatus = "innerHTML"; };
     Parser.prototype.parseDynamicData = function (token) {
-        var el = {
-            type: token.type,
-            val: token.val,
-            replacement: '',
-            line: token.pos.row,
-            col: token.pos.col
-        };
+        var el = this.parseSimpleAstElement(token);
         this.currentNode.children.push(el);
     };
     Parser.prototype.parseText = function (token) {
@@ -199,6 +185,17 @@ var Parser = /** @class */ (function () {
                 " col " +
                 token.pos.col);
         this.currentNode = this.unclosedNodes[this.unclosedNodes.length - 1];
+    };
+    Object.defineProperty(Parser.prototype, "afterOpTagEnd", {
+        get: function () {
+            return this.currentNode.currentStatus === "innerHTML";
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Parser.prototype.parseAsInnerHTML = function (token) {
+        token.type = "Text";
+        return this.parseText(token);
     };
     return Parser;
 }());

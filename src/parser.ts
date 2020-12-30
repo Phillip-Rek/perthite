@@ -112,32 +112,21 @@ export class Parser {
         this.currentNode = el;
     }
     private parseAttribute(token: Token) {
-        if (this.currentNode.currentStatus === "innerHTML") {
-            token.type = "Text"
-            return this.parseText(token)
-        }
+        if (this.afterOpTagEnd) { return this.parseAsInnerHTML(token) }
         this.currentNode.attributes.push(token.val);
     }
     private parseDynamicAttribute(token: Token) {
-        if (this.currentNode.currentStatus === "innerHTML") {
-            token.type = "Text"
-            return this.parseText(token)
-        }
+        if (this.afterOpTagEnd) { return this.parseAsInnerHTML(token) }
         this.currentNode.attributes.push(token.val);
     }
     private parseEvent(token: Token) {
-        if (this.currentNode.currentStatus === "innerHTML") {
-            token.type = "Text"
-            return this.parseText(token)
-        }
+        if (this.afterOpTagEnd) { return this.parseAsInnerHTML(token) }
         let el = this.parseSimpleAstElement(token);
         this.currentNode.events.push(el)
     }
     private parseForStatement(token: Token) {
-        if (this.currentNode.currentStatus === "innerHTML") {
-            token.type = "Text"
-            return this.parseText(token)
-        }
+        if (this.afterOpTagEnd) { return this.parseAsInnerHTML(token) }
+
         if (!token.val.startsWith("{{")) {
             let nativeFor = token.val.replace(/for=['"]/g, "for(");
             nativeFor = nativeFor.slice(0, -1) + ")"
@@ -147,10 +136,8 @@ export class Parser {
         this.currentNode.ForStatement = el;
     }
     private parseIfStatement(token: Token) {
-        if (this.currentNode.currentStatus === "innerHTML") {
-            token.type = "Text"
-            return this.parseText(token)
-        }
+        if (this.afterOpTagEnd) { return this.parseAsInnerHTML(token) }
+
         //transforming non-native tyntax to natice syntax
         if (token.val.startsWith("if=")) {
             let nativeIf = token.val
@@ -161,10 +148,8 @@ export class Parser {
         this.currentNode.ifStatement = el;
     }
     private parseElseIfStatement(token: Token) {
-        if (this.currentNode.currentStatus === "innerHTML") {
-            token.type = "Text"
-            return this.parseText(token)
-        }
+        if (this.afterOpTagEnd) { return this.parseAsInnerHTML(token) }
+
         if (token.val.startsWith("else-if=")) {
             let nativeIf = token.val
             nativeIf = nativeIf.replace(/else-if=["']/, 'else if(').slice(0, -1) + ")"
@@ -174,13 +159,8 @@ export class Parser {
         this.currentNode.ifStatement = el;
     }
     private parseElseStatement(token: Token) {
-        if (this.currentNode.currentStatus === "innerHTML") {
-            token.type = "Text"
-            return this.parseText(token)
-        }
-        if (token.val === "else")
-            token.val = "{{ " + token.val + " }}"
-
+        if (this.afterOpTagEnd) { return this.parseAsInnerHTML(token) }
+        if (token.val === "else") { token.val = "{{ " + token.val + " }}" }
         let el = this.parseSimpleAstElement(token);
         this.currentNode.ifStatement = el;
     }
@@ -192,22 +172,14 @@ export class Parser {
             col: token.pos.col,
         }
     }
-    private parseOpenTagEnd() {
-        this.currentNode.currentStatus = "innerHTML";
-    }
+    private parseOpenTagEnd() { this.currentNode.currentStatus = "innerHTML"; }
     private parseDynamicData(token: Token) {
-        let el = {
-            type: token.type,
-            val: token.val,
-            replacement: '',
-            line: token.pos.row,
-            col: token.pos.col,
-        }
+        let el = this.parseSimpleAstElement(token)
         this.currentNode.children.push(el)
     }
     private parseText(token: Token) {
         let token_ = this.parseSimpleAstElement(token);
-        this.currentNode.children.push(token_)
+        this.currentNode.children.push(token_);
     }
     private parseSelfClosingTag() {
         this.currentNode.type = "HtmlElement";
@@ -230,6 +202,13 @@ export class Parser {
                 token.pos.col
             )
         this.currentNode = this.unclosedNodes[this.unclosedNodes.length - 1]
+    }
+    private get afterOpTagEnd() {
+        return this.currentNode.currentStatus === "innerHTML"
+    }
+    private parseAsInnerHTML(token: Token) {
+        token.type = "Text"
+        return this.parseText(token)
     }
 }
 
