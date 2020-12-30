@@ -151,6 +151,12 @@ export class Parser {
             token.type = "Text"
             return this.parseText(token)
         }
+        //transforming non-native tyntax to natice syntax
+        if (token.val.startsWith("if=")) {
+            let nativeIf = token.val
+            nativeIf = nativeIf.replace(/if=["']/, 'if(').slice(0, -1) + ")"
+            token.val = "{{ " + nativeIf + " }}"
+        }
         let el = this.parseSimpleAstElement(token);
         this.currentNode.ifStatement = el;
     }

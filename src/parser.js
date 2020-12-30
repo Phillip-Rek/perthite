@@ -122,6 +122,12 @@ var Parser = /** @class */ (function () {
             token.type = "Text";
             return this.parseText(token);
         }
+        //transforming non-native tyntax to natice syntax
+        if (token.val.startsWith("if=")) {
+            var nativeIf = token.val;
+            nativeIf = nativeIf.replace(/if=["']/, 'if(').slice(0, -1) + ")";
+            token.val = "{{ " + nativeIf + " }}";
+        }
         var el = this.parseSimpleAstElement(token);
         this.currentNode.ifStatement = el;
     };
