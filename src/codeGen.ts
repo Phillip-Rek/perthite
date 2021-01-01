@@ -224,28 +224,6 @@ class GenerateCode {
         }
         return variable;
     }
-    private handleIfErrs(statement: string, node: AstNode) {
-        let st = statement;
-        st = st.slice(st.indexOf("(") + 1, st.lastIndexOf(")")).trim()
-        //extract expressions
-        let exps = st.split(/[ ]*[=<>&]+[ ]*/g)
-
-        for (const exp of exps) {
-            let found = false;
-            for (const loc of node.locals) {
-                if (loc === exp) found = true;
-            }
-            if (
-                found === false &&
-                this.data[exp] === undefined &&
-                parseInt(exp) !== parseInt(exp) &&
-                !exp.startsWith('"') && !exp.startsWith("'") &&
-                !exp.endsWith('"') && !exp.endsWith("'") &&
-                exp !== 'false' && exp !== 'true'
-            ) { throw new Error(exp + " is not defined") }
-            else console.log(exp)
-        }
-    }
 }
 
 export function render(input: { srcFile?: string; template?: string; }, data: {}) {

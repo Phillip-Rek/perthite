@@ -212,31 +212,6 @@ var GenerateCode = /** @class */ (function () {
             node.col;
         throw new ReferenceError(msg);
     };
-    GenerateCode.prototype.handleIfErrs = function (statement, node) {
-        var st = statement;
-        st = st.slice(st.indexOf("(") + 1, st.lastIndexOf(")")).trim();
-        //extract expressions
-        var exps = st.split(/[ ]*[=<>&]+[ ]*/g);
-        for (var _i = 0, exps_1 = exps; _i < exps_1.length; _i++) {
-            var exp = exps_1[_i];
-            var found = false;
-            for (var _a = 0, _b = node.locals; _a < _b.length; _a++) {
-                var loc = _b[_a];
-                if (loc === exp)
-                    found = true;
-            }
-            if (found === false &&
-                this.data[exp] === undefined &&
-                parseInt(exp) !== parseInt(exp) &&
-                !exp.startsWith('"') && !exp.startsWith("'") &&
-                !exp.endsWith('"') && !exp.endsWith("'") &&
-                exp !== 'false' && exp !== 'true') {
-                throw new Error(exp + " is not defined");
-            }
-            else
-                console.log(exp);
-        }
-    };
     return GenerateCode;
 }());
 function render(input, data) {
