@@ -15,8 +15,8 @@ const elseIfStatement_Re = /else-if=["][ \w=<>&.\-_'"&\(\)\|]+["]/;
 const elseIfStatement_Re_2 = /{{[ ]*else if\([ \w.$\[\]"'=<>+\-,'"&\(\)\|]+\)[ ]*}}/;
 const elseStatement_Re = /else/;
 const elseStatement_Re_2 = /{{[ ]*else[ ]*}}/;
-const forStatement_Re = /for=["']let[ \w.$\[\],]+['"]/i;
-const forStatement_Re_2 = /{{[ ]*for\(let [a-z0-9_]+ of [ \w.$\[\],]+\)[ ]*}}/i;
+const forStatement_Re = /for=["']let[ \w.$\[\],;:'"]+['"]/i;
+const forStatement_Re_2 = /{{[ ]*for\([ a-z0-9_\w.$\[\]=<>\-+,]+\)[ ]*}}/i;
 const on_Re = /\*on[a-z]+="[ a-z0-9_\(\).,]+"/i;
 const text_Re = /[ \w"'=\(\)\n\t!&^%$#@\-:_+\\/,.?\[\]>]+/i;
 const openTagStart_Re = /<[-_;:&%$#@+=*\w]+/i;
@@ -346,7 +346,6 @@ export class Lexer {
     }
     private get forStatement() {
         if (this.doesNotContain(forStatement_Re)) return false;
-
         let forStatement = this.input.match(forStatement_Re)[0];
         return this.input.indexOf(forStatement) === 0 && forStatement;
     }

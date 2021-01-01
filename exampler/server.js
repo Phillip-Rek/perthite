@@ -26,7 +26,8 @@ let gb = photon.render({
     ],
     concat: (param = "", param2 = "") => {
         return param + param2;
-    }
+    },
+    isString: (arg) => typeof arg === "string"
 });
 console.log(gb)
 app.get('/', (req, res) => {

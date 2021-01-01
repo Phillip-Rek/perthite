@@ -6,11 +6,12 @@ declare type AstNode = Partial<ASTElement>;
 
 let templateBuffer: string = 'let template = \`\`\n';
 let buffer = "";
-
+let globalVars = "";
 class GenerateCode {
-    constructor(ast: AstNode, data: any) {
+    constructor(ast: AstNode, data: any, file: string) {
         this.node = ast;
         this.data = data;
+        this.file = file;
         switch (ast.type) {
             case "Program":
                 this.initProgram(this.node);
@@ -31,6 +32,7 @@ class GenerateCode {
     }
     private node: AstNode;
     private data: any;
+    private file;
     public compile() { return buffer; }
     private initProgram(node: AstNode) {
         buffer = templateBuffer;
@@ -52,7 +54,8 @@ class GenerateCode {
                     expression = `\`${expression}\``;
                     break;
             }
-            buffer += `let ${identifier} = ${expression};\n`
+            globalVars += `let ${identifier} = ${expression};\n`;
+            buffer += `let ${identifier} = ${expression};\n`;
         }
         this.visitChildren(node);
     }
@@ -62,7 +65,7 @@ class GenerateCode {
 
         for (let child of children) {
             child.type = typ ? typ : child.type;
-            new GenerateCode(child, this.data);
+            new GenerateCode(child, this.data, this.file);
         }
     }
     private blockStatementsStack = 0;
@@ -120,24 +123,50 @@ class GenerateCode {
     private visitIfStatement(node: AstNode) {
         if (!node.ifStatement) return;
         let statement = node.ifStatement.val;
+        let statementForTest = statement.slice(2, -2).trim();
         if (statement.search(/{{[ ]*else if\(/) === 0) {
             let start = statement.indexOf("else if");
             let end = statement.lastIndexOf(")") + 1;
             statement = statement.slice(start, end);
+            statement = "if(false){}" + statement;
         }
         else if (statement.search(/{{[ ]*else[ ]*}}/) === 0) {
             statement = statement.slice(2, -2).trim();
+            statement = "if(false){}" + statement;
         }
         else {
             let start = statement.indexOf("if");
             let end = statement.lastIndexOf(")") + 1;
             statement = statement.slice(start, end);
         }
+        //we know that node.locals contains identifiers
+        //of all declared variables so we redeclare them
+        //to to able to handle errors
+        let locals = '';
+        for (const local of node.locals) {
+            if (globalVars.search(new RegExp(`let ${local} = `)) === -1) {
+                locals += "let " + local + " = undefined;\n"
+            }
+        }
+        statementForTest = globalVars + locals + statement;
+        try {
+            new Function(statementForTest + "{}")()
+        } catch (e) {
+            console.error(
+                e + " at line " +
+                node.ifStatement.line + ", col " +
+                node.ifStatement.col + " " +
+                ", file " + this.file +
+                ", src: " + node.ifStatement.val
+            )
+        }
+
         buffer += statement + "{\n";
         //remove ifStatement to avoid recursion
         node.ifStatement = null;
         this.visitHTMLElement(node);
         buffer += "}\n";
+
         return true;
     }
     private visitForStatement2(node: AstNode) {
@@ -148,6 +177,18 @@ class GenerateCode {
         buffer += statement + "{\n"
         this.visitChildren(node);
         buffer += "}\n"
+
+        try {
+            new Function(globalVars + "\n" + statement + "{}")()
+        } catch (e) {
+            console.error(
+                e + " at line " +
+                node.ForStatement.line + " col " +
+                node.ForStatement.col + " " +
+                node.ForStatement.val
+            )
+        }
+
     }
 
     private visitText(node: AstNode) {
@@ -183,6 +224,28 @@ class GenerateCode {
         }
         return variable;
     }
+    private handleIfErrs(statement: string, node: AstNode) {
+        let st = statement;
+        st = st.slice(st.indexOf("(") + 1, st.lastIndexOf(")")).trim()
+        //extract expressions
+        let exps = st.split(/[ ]*[=<>&]+[ ]*/g)
+
+        for (const exp of exps) {
+            let found = false;
+            for (const loc of node.locals) {
+                if (loc === exp) found = true;
+            }
+            if (
+                found === false &&
+                this.data[exp] === undefined &&
+                parseInt(exp) !== parseInt(exp) &&
+                !exp.startsWith('"') && !exp.startsWith("'") &&
+                !exp.endsWith('"') && !exp.endsWith("'") &&
+                exp !== 'false' && exp !== 'true'
+            ) { throw new Error(exp + " is not defined") }
+            else console.log(exp)
+        }
+    }
 }
 
 export function render(input: { srcFile?: string; template?: string; }, data: {}) {
@@ -192,11 +255,13 @@ export function render(input: { srcFile?: string; template?: string; }, data: {}
     }
     let tokens = new Lexer(tmplt).tokenize();
     let AST = JSON.parse(JSON.stringify(new Parser(tokens).getAST()));
-    let template = new GenerateCode(AST, data).compile();
+    let template = new GenerateCode(AST, data, input.srcFile).compile();
 
     fs.writeFileSync(__dirname + '/template.js', template, "utf8")
-
-
-    let output = new Function(template + "return template;\n")();
-    return output;
+    try {
+        let output = new Function(template + "return template;\n")();
+        return output;
+    } catch (err) {
+        console.error("Failed to compile")
+    }
 }

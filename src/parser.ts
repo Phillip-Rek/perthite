@@ -20,6 +20,7 @@ export declare type ASTElement = {
     line: number;
     col: number;
     isSelfClosing?: boolean;
+    locals: Array<string>;
     block: {
         type: string,
         nodes: Array<Partial<ASTElement>>
@@ -28,7 +29,7 @@ export declare type ASTElement = {
 export declare type Program = Pick<ASTElement, "type" | "children">;
 export declare type simpleASTElement = Required<Pick<ASTElement, "type" | "val" | "line" | "col">>;
 export declare type tagAST = Pick<ASTElement, "type" | "val" | "name" | "line" | "col" | "attributes" | "block" | "events">;
-
+export declare type htmlElement = Partial<ASTElement> & { locals?: Array<string> };
 export class Parser {
     constructor(tokens: Array<Token>) {
         for (let i = 0; i < tokens.length; i++) {
@@ -50,8 +51,8 @@ export class Parser {
     private logError(msg: string) {
         throw new Error(msg)
     }
-    private parseOpenTagStart(token: Token) {
-        let el: Partial<ASTElement> = {
+    parseOpenTagStart(token: Token) {
+        let el: htmlElement = {
             type: "HtmlElement",
             name: token.tagName,
             attributes: [],
@@ -64,26 +65,27 @@ export class Parser {
             children: [],
             nextSibling: null,
             nextElementSibling: null,
-            previousElementSibling: this.previousElementSibling
+            previousElementSibling: this.previousElementSibling,
+            locals: this.currentNode.locals || []
         }
         this.currentNode.children.push(el);
         this.unclosedNodes.push(el);
         this.currentNode = el;
     }
-    private parseAttribute(token: Token) {
+    parseAttribute(token: Token) {
         if (this.afterOpTagEnd) { return this.parseAsInnerHTML(token) }
         this.currentNode.attributes.push(token.val);
     }
-    private parseDynamicAttribute(token: Token) {
+    parseDynamicAttribute(token: Token) {
         if (this.afterOpTagEnd) { return this.parseAsInnerHTML(token) }
         this.currentNode.attributes.push(token.val);
     }
-    private parseEvent(token: Token) {
+    parseEvent(token: Token) {
         if (this.afterOpTagEnd) { return this.parseAsInnerHTML(token) }
         let el = this.parseSimpleAstElement(token);
         this.currentNode.events.push(el)
     }
-    private parseForStatement(token: Token) {
+    parseForStatement(token: Token) {
         if (this.afterOpTagEnd) { return this.parseAsInnerHTML(token) }
 
         if (!token.val.startsWith("{{")) {
@@ -91,10 +93,15 @@ export class Parser {
             nativeFor = nativeFor.slice(0, -1) + ")"
             token.val = "{{ " + nativeFor + " }}";
         }
+        let local = token.val;
+        local = local.slice(local.indexOf("let") + 3, local.search(/[oi][nf]/)).trim()
         let el = this.parseSimpleAstElement(token);
+        if (this.currentNode.locals) {
+            this.currentNode.locals.push(local)
+        }
         this.currentNode.ForStatement = el;
     }
-    private parseIfStatement(token: Token) {
+    parseIfStatement(token: Token) {
         if (this.afterOpTagEnd) { return this.parseAsInnerHTML(token) }
 
         //transforming non-native tyntax to natice syntax
@@ -106,7 +113,7 @@ export class Parser {
         let el = this.parseSimpleAstElement(token);
         this.currentNode.ifStatement = el;
     }
-    private parseElseIfStatement(token: Token) {
+    parseElseIfStatement(token: Token) {
         if (this.afterOpTagEnd) { return this.parseAsInnerHTML(token) }
 
         if (token.val.startsWith("else-if=")) {
@@ -117,13 +124,13 @@ export class Parser {
         let el = this.parseSimpleAstElement(token);
         this.currentNode.ifStatement = el;
     }
-    private parseElseStatement(token: Token) {
+    parseElseStatement(token: Token) {
         if (this.afterOpTagEnd) { return this.parseAsInnerHTML(token) }
         if (token.val === "else") { token.val = "{{ " + token.val + " }}" }
         let el = this.parseSimpleAstElement(token);
         this.currentNode.ifStatement = el;
     }
-    private parseSimpleAstElement(token: Token): simpleASTElement {
+    parseSimpleAstElement(token: Token): simpleASTElement {
         return {
             type: token.type,
             val: token.val,
@@ -131,23 +138,23 @@ export class Parser {
             col: token.pos.col,
         }
     }
-    private parseOpenTagEnd() { this.currentNode.currentStatus = "innerHTML"; }
-    private parseDynamicData(token: Token) {
+    parseOpenTagEnd() { this.currentNode.currentStatus = "innerHTML"; }
+    parseDynamicData(token: Token) {
         let el = this.parseSimpleAstElement(token)
         this.currentNode.children.push(el)
     }
-    private parseText(token: Token) {
+    parseText(token: Token) {
         let token_ = this.parseSimpleAstElement(token);
         this.currentNode.children.push(token_);
     }
-    private parseSelfClosingTag() {
+    parseSelfClosingTag() {
         this.currentNode.type = "HtmlElement";
         this.currentNode.isSelfClosing = true;
         this.previousElementSibling = this.unclosedNodes[this.unclosedNodes.length - 1]
         this.unclosedNodes.pop();
         this.currentNode = this.unclosedNodes[this.unclosedNodes.length - 1]
     }
-    private parseCloseTag(token: Token) {
+    parseCloseTag(token: Token) {
         let tagName = token.val.slice(2, -1);
         if (this.unclosedNodes[this.unclosedNodes.length - 1].name === tagName) {
             this.previousElementSibling = this.unclosedNodes[this.unclosedNodes.length - 1]

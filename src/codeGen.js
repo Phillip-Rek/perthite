@@ -6,8 +6,9 @@ var lexer_1 = require("./lexer");
 var fs = require("fs");
 var templateBuffer = 'let template = \`\`\n';
 var buffer = "";
+var globalVars = "";
 var GenerateCode = /** @class */ (function () {
-    function GenerateCode(ast, data) {
+    function GenerateCode(ast, data, file) {
         this.blockStatementsStack = 0;
         this.extractLocalVariable = function (expression) {
             var variable = "";
@@ -21,6 +22,7 @@ var GenerateCode = /** @class */ (function () {
         };
         this.node = ast;
         this.data = data;
+        this.file = file;
         switch (ast.type) {
             case "Program":
                 this.initProgram(this.node);
@@ -61,6 +63,7 @@ var GenerateCode = /** @class */ (function () {
                     expression = "`" + expression + "`";
                     break;
             }
+            globalVars += "let " + identifier + " = " + expression + ";\n";
             buffer += "let " + identifier + " = " + expression + ";\n";
         }
         this.visitChildren(node);
@@ -71,7 +74,7 @@ var GenerateCode = /** @class */ (function () {
         for (var _i = 0, children_1 = children; _i < children_1.length; _i++) {
             var child = children_1[_i];
             child.type = typ ? typ : child.type;
-            new GenerateCode(child, this.data);
+            new GenerateCode(child, this.data, this.file);
         }
     };
     GenerateCode.prototype.visitHTMLElement = function (node) {
@@ -126,18 +129,42 @@ var GenerateCode = /** @class */ (function () {
         if (!node.ifStatement)
             return;
         var statement = node.ifStatement.val;
+        var statementForTest = statement.slice(2, -2).trim();
         if (statement.search(/{{[ ]*else if\(/) === 0) {
             var start = statement.indexOf("else if");
             var end = statement.lastIndexOf(")") + 1;
             statement = statement.slice(start, end);
+            statement = "if(false){}" + statement;
         }
         else if (statement.search(/{{[ ]*else[ ]*}}/) === 0) {
             statement = statement.slice(2, -2).trim();
+            statement = "if(false){}" + statement;
         }
         else {
             var start = statement.indexOf("if");
             var end = statement.lastIndexOf(")") + 1;
             statement = statement.slice(start, end);
+        }
+        //we know that node.locals contains identifiers
+        //of all declared variables so we redeclare them
+        //to to able to handle errors
+        var locals = '';
+        for (var _i = 0, _a = node.locals; _i < _a.length; _i++) {
+            var local = _a[_i];
+            if (globalVars.search(new RegExp("let " + local + " = ")) === -1) {
+                locals += "let " + local + " = undefined;\n";
+            }
+        }
+        statementForTest = globalVars + locals + statement;
+        try {
+            new Function(statementForTest + "{}")();
+        }
+        catch (e) {
+            console.error(e + " at line " +
+                node.ifStatement.line + ", col " +
+                node.ifStatement.col + " " +
+                ", file " + this.file +
+                ", src: " + node.ifStatement.val);
         }
         buffer += statement + "{\n";
         //remove ifStatement to avoid recursion
@@ -155,6 +182,15 @@ var GenerateCode = /** @class */ (function () {
         buffer += statement + "{\n";
         this.visitChildren(node);
         buffer += "}\n";
+        try {
+            new Function(globalVars + "\n" + statement + "{}")();
+        }
+        catch (e) {
+            console.error(e + " at line " +
+                node.ForStatement.line + " col " +
+                node.ForStatement.col + " " +
+                node.ForStatement.val);
+        }
     };
     GenerateCode.prototype.visitText = function (node) {
         buffer += "template += \`" + node.val + "\`;\n";
@@ -176,6 +212,31 @@ var GenerateCode = /** @class */ (function () {
             node.col;
         throw new ReferenceError(msg);
     };
+    GenerateCode.prototype.handleIfErrs = function (statement, node) {
+        var st = statement;
+        st = st.slice(st.indexOf("(") + 1, st.lastIndexOf(")")).trim();
+        //extract expressions
+        var exps = st.split(/[ ]*[=<>&]+[ ]*/g);
+        for (var _i = 0, exps_1 = exps; _i < exps_1.length; _i++) {
+            var exp = exps_1[_i];
+            var found = false;
+            for (var _a = 0, _b = node.locals; _a < _b.length; _a++) {
+                var loc = _b[_a];
+                if (loc === exp)
+                    found = true;
+            }
+            if (found === false &&
+                this.data[exp] === undefined &&
+                parseInt(exp) !== parseInt(exp) &&
+                !exp.startsWith('"') && !exp.startsWith("'") &&
+                !exp.endsWith('"') && !exp.endsWith("'") &&
+                exp !== 'false' && exp !== 'true') {
+                throw new Error(exp + " is not defined");
+            }
+            else
+                console.log(exp);
+        }
+    };
     return GenerateCode;
 }());
 function render(input, data) {
@@ -185,9 +246,14 @@ function render(input, data) {
     }
     var tokens = new lexer_1.Lexer(tmplt).tokenize();
     var AST = JSON.parse(JSON.stringify(new parser_1.Parser(tokens).getAST()));
-    var template = new GenerateCode(AST, data).compile();
+    var template = new GenerateCode(AST, data, input.srcFile).compile();
     fs.writeFileSync(__dirname + '/template.js', template, "utf8");
-    var output = new Function(template + "return template;\n")();
-    return output;
+    try {
+        var output = new Function(template + "return template;\n")();
+        return output;
+    }
+    catch (err) {
+        console.error("Failed to compile");
+    }
 }
 exports.render = render;

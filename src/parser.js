@@ -36,7 +36,8 @@ var Parser = /** @class */ (function () {
             children: [],
             nextSibling: null,
             nextElementSibling: null,
-            previousElementSibling: this.previousElementSibling
+            previousElementSibling: this.previousElementSibling,
+            locals: this.currentNode.locals || []
         };
         this.currentNode.children.push(el);
         this.unclosedNodes.push(el);
@@ -70,7 +71,12 @@ var Parser = /** @class */ (function () {
             nativeFor = nativeFor.slice(0, -1) + ")";
             token.val = "{{ " + nativeFor + " }}";
         }
+        var local = token.val;
+        local = local.slice(local.indexOf("let") + 3, local.search(/[oi][nf]/)).trim();
         var el = this.parseSimpleAstElement(token);
+        if (this.currentNode.locals) {
+            this.currentNode.locals.push(local);
+        }
         this.currentNode.ForStatement = el;
     };
     Parser.prototype.parseIfStatement = function (token) {
