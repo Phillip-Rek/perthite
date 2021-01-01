@@ -2,7 +2,7 @@ import { Parser, ASTElement } from './parser';
 import { Lexer } from './lexer';
 import * as fs from "fs"
 
-const mode = "development"
+let mode = "development"
 declare type AstNode = Partial<ASTElement>;
 
 let templateBuffer: string = 'let template = \`\`\n';
@@ -241,6 +241,18 @@ export function render(input: { srcFile?: string; template?: string; }, data: {}
     let template = new GenerateCode(AST, data, input.srcFile).compile();
 
     fs.writeFileSync(__dirname + '/template.js', template, "utf8")
-    let output = new Function(template + "return template;\n")();
-    return output;
+    if (mode === "development") {
+        let output = new Function(template + "return template;\n")();
+        return output;
+    }
+    else {
+        try {
+            let output = new Function(template + "return template;\n")();
+            return output;
+        }
+        catch (e) {
+            console.error("failed to compile");
+            return "<h1 style='color: red'>failed to compile</h1>"
+        }
+    }
 }

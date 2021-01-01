@@ -228,7 +228,19 @@ function render(input, data) {
     var AST = JSON.parse(JSON.stringify(new parser_1.Parser(tokens).getAST()));
     var template = new GenerateCode(AST, data, input.srcFile).compile();
     fs.writeFileSync(__dirname + '/template.js', template, "utf8");
-    var output = new Function(template + "return template;\n")();
-    return output;
+    if (mode === "development") {
+        var output = new Function(template + "return template;\n")();
+        return output;
+    }
+    else {
+        try {
+            var output = new Function(template + "return template;\n")();
+            return output;
+        }
+        catch (e) {
+            console.error("failed to compile");
+            return "<h1 style='color: red'>failed to compile</h1>";
+        }
+    }
 }
 exports.render = render;
