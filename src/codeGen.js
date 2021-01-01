@@ -135,16 +135,17 @@ var GenerateCode = /** @class */ (function () {
             var start = statement.indexOf("else if");
             var end = statement.lastIndexOf(")") + 1;
             statement = statement.slice(start, end);
-            statement = "if(false){}" + statement;
+            statementForTest = "if(false){}" + statement;
         }
         else if (statement.search(/{{[ ]*else[ ]*}}/) === 0) {
             statement = statement.slice(2, -2).trim();
-            statement = "if(false){}" + statement;
+            statementForTest = "if(false){}" + statement;
         }
         else {
             var start = statement.indexOf("if");
             var end = statement.lastIndexOf(")") + 1;
             statement = statement.slice(start, end);
+            statementForTest = statement;
         }
         //we know that node.locals contains identifiers
         //of all declared variables so we redeclare them
@@ -157,7 +158,7 @@ var GenerateCode = /** @class */ (function () {
             }
         }
         if (mode === "development") {
-            statementForTest = globalVars + locals + statement;
+            statementForTest = globalVars + locals + statementForTest;
             try {
                 new Function(statementForTest + "{}")();
             }
