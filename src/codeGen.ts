@@ -258,10 +258,6 @@ export function render(input: { srcFile?: string; template?: string; }, data: {}
     let template = new GenerateCode(AST, data, input.srcFile).compile();
 
     fs.writeFileSync(__dirname + '/template.js', template, "utf8")
-    try {
-        let output = new Function(template + "return template;\n")();
-        return output;
-    } catch (err) {
-        console.error("Failed to compile")
-    }
+    let output = new Function(template + "return template;\n")();
+    return output;
 }

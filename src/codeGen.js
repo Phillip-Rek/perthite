@@ -248,12 +248,7 @@ function render(input, data) {
     var AST = JSON.parse(JSON.stringify(new parser_1.Parser(tokens).getAST()));
     var template = new GenerateCode(AST, data, input.srcFile).compile();
     fs.writeFileSync(__dirname + '/template.js', template, "utf8");
-    try {
-        var output = new Function(template + "return template;\n")();
-        return output;
-    }
-    catch (err) {
-        console.error("Failed to compile");
-    }
+    var output = new Function(template + "return template;\n")();
+    return output;
 }
 exports.render = render;
