@@ -2,6 +2,7 @@ import { Parser, ASTElement } from './parser';
 import { Lexer } from './lexer';
 import * as fs from "fs"
 
+const mode = "development"
 declare type AstNode = Partial<ASTElement>;
 
 let templateBuffer: string = 'let template = \`\`\n';
@@ -148,17 +149,19 @@ class GenerateCode {
                 locals += "let " + local + " = undefined;\n"
             }
         }
-        statementForTest = globalVars + locals + statement;
-        try {
-            new Function(statementForTest + "{}")()
-        } catch (e) {
-            console.error(
-                e + " at line " +
-                node.ifStatement.line + ", col " +
-                node.ifStatement.col + " " +
-                ", file " + this.file +
-                ", src: " + node.ifStatement.val
-            )
+        if (mode === "development") {
+            statementForTest = globalVars + locals + statement;
+            try {
+                new Function(statementForTest + "{}")()
+            } catch (e) {
+                console.error(
+                    e + " at line " +
+                    node.ifStatement.line + ", col " +
+                    node.ifStatement.col + " " +
+                    ", file " + this.file +
+                    ", src: " + node.ifStatement.val
+                )
+            }
         }
 
         buffer += statement + "{\n";
@@ -178,15 +181,17 @@ class GenerateCode {
         this.visitChildren(node);
         buffer += "}\n"
 
-        try {
-            new Function(globalVars + "\n" + statement + "{}")()
-        } catch (e) {
-            console.error(
-                e + " at line " +
-                node.ForStatement.line + " col " +
-                node.ForStatement.col + " " +
-                node.ForStatement.val
-            )
+        if (mode === "development") {
+            try {
+                new Function(globalVars + "\n" + statement + "{}")()
+            } catch (e) {
+                console.error(
+                    e + " at line " +
+                    node.ForStatement.line + " col " +
+                    node.ForStatement.col + " " +
+                    node.ForStatement.val
+                )
+            }
         }
 
     }

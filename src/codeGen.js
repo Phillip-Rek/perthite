@@ -4,6 +4,7 @@ exports.render = void 0;
 var parser_1 = require("./parser");
 var lexer_1 = require("./lexer");
 var fs = require("fs");
+var mode = "development";
 var templateBuffer = 'let template = \`\`\n';
 var buffer = "";
 var globalVars = "";
@@ -155,16 +156,18 @@ var GenerateCode = /** @class */ (function () {
                 locals += "let " + local + " = undefined;\n";
             }
         }
-        statementForTest = globalVars + locals + statement;
-        try {
-            new Function(statementForTest + "{}")();
-        }
-        catch (e) {
-            console.error(e + " at line " +
-                node.ifStatement.line + ", col " +
-                node.ifStatement.col + " " +
-                ", file " + this.file +
-                ", src: " + node.ifStatement.val);
+        if (mode === "development") {
+            statementForTest = globalVars + locals + statement;
+            try {
+                new Function(statementForTest + "{}")();
+            }
+            catch (e) {
+                console.error(e + " at line " +
+                    node.ifStatement.line + ", col " +
+                    node.ifStatement.col + " " +
+                    ", file " + this.file +
+                    ", src: " + node.ifStatement.val);
+            }
         }
         buffer += statement + "{\n";
         //remove ifStatement to avoid recursion
@@ -182,14 +185,16 @@ var GenerateCode = /** @class */ (function () {
         buffer += statement + "{\n";
         this.visitChildren(node);
         buffer += "}\n";
-        try {
-            new Function(globalVars + "\n" + statement + "{}")();
-        }
-        catch (e) {
-            console.error(e + " at line " +
-                node.ForStatement.line + " col " +
-                node.ForStatement.col + " " +
-                node.ForStatement.val);
+        if (mode === "development") {
+            try {
+                new Function(globalVars + "\n" + statement + "{}")();
+            }
+            catch (e) {
+                console.error(e + " at line " +
+                    node.ForStatement.line + " col " +
+                    node.ForStatement.col + " " +
+                    node.ForStatement.val);
+            }
         }
     };
     GenerateCode.prototype.visitText = function (node) {
