@@ -17,7 +17,7 @@ const elseStatement_Re = /else/;
 const elseStatement_Re_2 = /{{[ ]*else[ ]*}}/;
 const forStatement_Re = /for=["']let[ \w.$\[\],;:'"]+['"]/;
 const forStatement_Re_2 = /{{[ ]*for\([ a-zA-Z0-9_\w.$\[\]=<>\-+,]+\)[ ]*}}/;
-const traditionalFor_Re = / /;
+export const forEach_Re = /{{[ ]*[a-zA-Z0-9.\[\]_]+[.]forEach\(\([ a-zA-Z0-9,._]+\)=>\)[ ]*}}/;
 const on_Re = /\*on[a-z]+="[ a-z0-9_\(\).,]+"/i;
 const text_Re = /[ \w"'=\(\)\n\t!&^%$#@\-:_+\\/,.?\[\]>]+/i;
 const openTagStart_Re = /<[-_;:&%$#@+=*\w]+/i;
@@ -129,6 +129,14 @@ export class Lexer {
                     pos: Object.freeze({ ...this.pos })
                 })
                 this.consume(this.forStatement)
+            }
+            else if (this.forEach) {
+                this.tokens.push({
+                    type: "ForStatement",
+                    val: this.forEach,
+                    pos: Object.freeze({ ...this.pos })
+                })
+                this.consume(this.forEach)
             }
             else if (this.on) {
                 this.tokens.push({
@@ -360,8 +368,10 @@ export class Lexer {
         let forStatement = this.input.match(forStatement_Re)[0];
         return this.input.indexOf(forStatement) === 0 && forStatement;
     }
-    private endOfJSCode() {
-
+    private get forEach() {
+        if (this.doesNotContain(forEach_Re)) return false;
+        let foreach = this.input.match(forEach_Re)[0];
+        return this.input.indexOf(foreach) === 0 && foreach;
     }
     private get on() {
         if (this.doesNotContain(on_Re)) return false;

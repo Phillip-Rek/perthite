@@ -11,7 +11,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 exports.__esModule = true;
-exports.Lexer = void 0;
+exports.Lexer = exports.forEach_Re = void 0;
 var ifStatement_Re = /if=["][ \w=<>&.\-_'"&\(\)\|]+["]/;
 var ifStatement_Re_2 = /{{[ ]*if\([ \w.$\[\]"'=<>+\-,&\(\)\|]+\)[ ]*}}/;
 var elseIfStatement_Re = /else-if=["][ \w=<>&.\-_'"&\(\)\|]+["]/;
@@ -20,7 +20,7 @@ var elseStatement_Re = /else/;
 var elseStatement_Re_2 = /{{[ ]*else[ ]*}}/;
 var forStatement_Re = /for=["']let[ \w.$\[\],;:'"]+['"]/;
 var forStatement_Re_2 = /{{[ ]*for\([ a-zA-Z0-9_\w.$\[\]=<>\-+,]+\)[ ]*}}/;
-var traditionalFor_Re = / /;
+exports.forEach_Re = /{{[ ]*[a-zA-Z0-9.\[\]_]+[.]forEach\(\([ a-zA-Z0-9,._]+\)=>\)[ ]*}}/;
 var on_Re = /\*on[a-z]+="[ a-z0-9_\(\).,]+"/i;
 var text_Re = /[ \w"'=\(\)\n\t!&^%$#@\-:_+\\/,.?\[\]>]+/i;
 var openTagStart_Re = /<[-_;:&%$#@+=*\w]+/i;
@@ -131,6 +131,14 @@ var Lexer = /** @class */ (function () {
                     pos: Object.freeze(__assign({}, this.pos))
                 });
                 this.consume(this.forStatement);
+            }
+            else if (this.forEach) {
+                this.tokens.push({
+                    type: "ForStatement",
+                    val: this.forEach,
+                    pos: Object.freeze(__assign({}, this.pos))
+                });
+                this.consume(this.forEach);
             }
             else if (this.on) {
                 this.tokens.push({
@@ -456,8 +464,16 @@ var Lexer = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
-    Lexer.prototype.endOfJSCode = function () {
-    };
+    Object.defineProperty(Lexer.prototype, "forEach", {
+        get: function () {
+            if (this.doesNotContain(exports.forEach_Re))
+                return false;
+            var foreach = this.input.match(exports.forEach_Re)[0];
+            return this.input.indexOf(foreach) === 0 && foreach;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(Lexer.prototype, "on", {
         get: function () {
             if (this.doesNotContain(on_Re))

@@ -1,5 +1,5 @@
 import { Parser, ASTElement } from './parser';
-import { Lexer } from './lexer';
+import { Lexer, forEach_Re } from './lexer';
 import * as fs from "fs"
 
 let mode = "development"
@@ -176,10 +176,20 @@ class GenerateCode {
         if (!node.ForStatement) return;
         //end an open-tag-start
         buffer += `template +=\`>\`\n`;
-        let statement = node.ForStatement.val.slice(2, -2).trim();
-        buffer += statement + "{\n"
-        this.visitChildren(node);
-        buffer += "}\n"
+        let statement = node.ForStatement.val;
+        if (statement.search(forEach_Re) > -1) {
+            statement = statement.slice(2, -2).trim();
+            statement = statement.slice(0, statement.lastIndexOf("=>"))
+            buffer += statement + "=>{\n"
+            this.visitChildren(node);
+            buffer += "\n})\n"
+        }
+        else {
+            statement = statement.slice(2, -2).trim();
+            buffer += statement + "{\n"
+            this.visitChildren(node);
+            buffer += "}\n"
+        }
 
         if (mode === "development") {
             try {

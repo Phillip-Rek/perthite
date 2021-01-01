@@ -181,10 +181,20 @@ var GenerateCode = /** @class */ (function () {
             return;
         //end an open-tag-start
         buffer += "template +=`>`\n";
-        var statement = node.ForStatement.val.slice(2, -2).trim();
-        buffer += statement + "{\n";
-        this.visitChildren(node);
-        buffer += "}\n";
+        var statement = node.ForStatement.val;
+        if (statement.search(lexer_1.forEach_Re) > -1) {
+            statement = statement.slice(2, -2).trim();
+            statement = statement.slice(0, statement.lastIndexOf("=>"));
+            buffer += statement + "=>{\n";
+            this.visitChildren(node);
+            buffer += "\n})\n";
+        }
+        else {
+            statement = statement.slice(2, -2).trim();
+            buffer += statement + "{\n";
+            this.visitChildren(node);
+            buffer += "}\n";
+        }
         if (mode === "development") {
             try {
                 new Function(globalVars + "\n" + statement + "{}")();
