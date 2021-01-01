@@ -28,7 +28,7 @@ var attribute_Re = /[-_:&$#@*\w]+=["|'][ '\w\-_.:&$#@\(\)\{\}*]+['|"]/i;
 var dynamicAttr_Re = /[-_:*a-z0-9]+={{[ a-z0-9._\[\]]+}}/i;
 var css_Re = /style=["'][a-z\-\;0-9\: ]+['"]/i;
 var link_Re = /href=["'][a-z\-\;0-9\://. ]+['"]/i;
-var dynamicData_Re = /{{[ ]*[a-z0-9_.$\[\]\(\)"'\-_, ]+[ ]*}}/i;
+var dynamicData_Re = /{{[ ]*[a-z0-9_.$\[\]\(\)\+"'\-_, ]+[ ]*}}/i;
 var closeTag_Re = /<\/[-_;:&%$#@+=*\w]+>/i;
 var javascriptSrc_Reg = /<script>[ \w"'=\(\)\n\t!&^%$#@\-:_<>+\/,.\?\[\]><?;\\]+<\/script>/i;
 var Lexer = /** @class */ (function () {

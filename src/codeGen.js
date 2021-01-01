@@ -182,22 +182,25 @@ var GenerateCode = /** @class */ (function () {
         //end an open-tag-start
         buffer += "template +=`>`\n";
         var statement = node.ForStatement.val;
+        var statementForTest;
         if (statement.search(lexer_1.forEach_Re) > -1) {
             statement = statement.slice(2, -2).trim();
             statement = statement.slice(0, statement.lastIndexOf("=>"));
             buffer += statement + "=>{\n";
             this.visitChildren(node);
             buffer += "\n})\n";
+            statementForTest = globalVars + "\n" + statement + "=>{})";
         }
         else {
             statement = statement.slice(2, -2).trim();
             buffer += statement + "{\n";
             this.visitChildren(node);
             buffer += "}\n";
+            statementForTest = globalVars + "\n" + statement + "{}";
         }
         if (mode === "development") {
             try {
-                new Function(globalVars + "\n" + statement + "{}")();
+                new Function(statementForTest)();
             }
             catch (e) {
                 console.error(e + " at line " +
@@ -213,11 +216,11 @@ var GenerateCode = /** @class */ (function () {
     GenerateCode.prototype.visitDynamicData = function (node) {
         var val = node.val.slice(2, -2).trim();
         //get a variable from expression like users[0]
-        var variable = this.extractLocalVariable(val);
+        //let variable = this.extractLocalVariable(val)
         //check if a variable was declared
-        if (buffer.search("let " + variable) === -1) {
-            this.refErr(node);
-        }
+        // if (buffer.search("let " + variable) === -1) {
+        //     this.refErr(node)
+        // }
         buffer = buffer.concat("template += " + val + ";\n");
     };
     GenerateCode.prototype.refErr = function (node) {
