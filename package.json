@@ -2,7 +2,7 @@
   "name": "photon-js",
   "version": "1.0.0",
   "description": "Light Weight Javascript Templating Engine",
-  "main": "index.js",
+  "main": "exampler/index.js",
   "scripts": {
     "start": "nodemon exampler/index.js"
   },
