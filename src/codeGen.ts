@@ -247,28 +247,43 @@ class GenerateCode {
     }
 }
 
-export function render(input: { srcFile?: string; template?: string; }, data: {}) {
-    let tmplt = input.template;
-    if (input.srcFile) {
-        tmplt = fs.readFileSync(input.srcFile, "utf8").toString()
-    }
-    let tokens = new Lexer(tmplt).tokenize();
+export function render(tmplateSrsCode: string, file: string, data: {}) {
+    // if (!tmplateSrsCode) {
+    //     tmplateSrsCode = fs.readFileSync(file, "utf8").toString()
+    // }
+    let tokens = new Lexer(tmplateSrsCode).tokenize();
     let AST = JSON.parse(JSON.stringify(new Parser(tokens).getAST()));
-    let template = new GenerateCode(AST, data, input.srcFile).compile();
+    let template = new GenerateCode(AST, data, file).compile();
 
     fs.writeFileSync(__dirname + '/template.js', template, "utf8")
+    let output;
     if (mode === "development") {
         let output = new Function(template + "return template;\n")();
         return output;
     }
     else {
         try {
-            let output = new Function(template + "return template;\n")();
-            return output;
+            output = new Function(template + "return template;\n")();
+            return output
         }
         catch (e) {
             console.error("failed to compile");
-            return "<h1 style='color: red'>failed to compile</h1>"
+            return output
+            //return "<h1 style='color: red'>failed to compile</h1>"
         }
     }
 }
+
+export function engine(
+    filePath: string,
+    options: {},
+    callback: (arg: any, arg2?: any) => string
+) {
+    // define the template engine
+    fs.readFile(filePath, (err, content) => {
+        if (err) return callback(err)
+        let res = render(content.toString(), filePath, options);
+        return callback(null, res);
+    })
+}
+

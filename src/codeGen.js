@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.render = void 0;
+exports.engine = exports.render = void 0;
 var parser_1 = require("./parser");
 var lexer_1 = require("./lexer");
 var fs = require("fs");
@@ -233,28 +233,39 @@ var GenerateCode = /** @class */ (function () {
     };
     return GenerateCode;
 }());
-function render(input, data) {
-    var tmplt = input.template;
-    if (input.srcFile) {
-        tmplt = fs.readFileSync(input.srcFile, "utf8").toString();
-    }
-    var tokens = new lexer_1.Lexer(tmplt).tokenize();
+function render(tmplateSrsCode, file, data) {
+    // if (!tmplateSrsCode) {
+    //     tmplateSrsCode = fs.readFileSync(file, "utf8").toString()
+    // }
+    var tokens = new lexer_1.Lexer(tmplateSrsCode).tokenize();
     var AST = JSON.parse(JSON.stringify(new parser_1.Parser(tokens).getAST()));
-    var template = new GenerateCode(AST, data, input.srcFile).compile();
+    var template = new GenerateCode(AST, data, file).compile();
     fs.writeFileSync(__dirname + '/template.js', template, "utf8");
+    var output;
     if (mode === "development") {
-        var output = new Function(template + "return template;\n")();
-        return output;
+        var output_1 = new Function(template + "return template;\n")();
+        return output_1;
     }
     else {
         try {
-            var output = new Function(template + "return template;\n")();
+            output = new Function(template + "return template;\n")();
             return output;
         }
         catch (e) {
             console.error("failed to compile");
-            return "<h1 style='color: red'>failed to compile</h1>";
+            return output;
+            //return "<h1 style='color: red'>failed to compile</h1>"
         }
     }
 }
 exports.render = render;
+function engine(filePath, options, callback) {
+    // define the template engine
+    fs.readFile(filePath, function (err, content) {
+        if (err)
+            return callback(err);
+        var res = render(content.toString(), filePath, options);
+        return callback(null, res);
+    });
+}
+exports.engine = engine;

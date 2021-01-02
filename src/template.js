@@ -1,11 +1,14 @@
 let template = ``
+let settings = {"x-powered-by":true,"etag":"weak","env":"development","query parser":"extended","subdomain offset":2,"trust proxy":false,"views":"./views","jsonp callback name":"callback","view engine":"html"};
 let user = `User-1`;
 let users = [{"name":"User-1","lastname":"Last-N-1"},{"name":"User-2","lastname":"Last-N-2"}];
 let complex = [[1,2],[6,7],[8,9]];
 let concat = (param = "", param2 = "") => {
-        return param + param2;
-    };
+            return param + param2;
+        };
 let isString = (arg) => typeof arg === "string";
+let _locals = {};
+let cache = false;
 if(user === user){
 template += `<div`;
 template += ` class="A"`;
@@ -40,6 +43,17 @@ template += `</h1>`;
 }
 template += `</div>`;
 }
+template += `<div`;
+template +=`>`
+for(let us of users){
+template += ` `;
+template += `        `;
+template += `<h1`;
+template += ">";
+template += us.name;
+template += `</h1>`;
+}
+template += `</div>`;
 template += `</div>`;
 }
 else if(user === user){
@@ -83,15 +97,6 @@ template += ` `;
 template += `LAST ELSE BLOCK`;
 template += `</div>`;
 }
-template += `<div`;
-template +=`>`
-users.forEach((user,i)=>{
-template += ` `;
-template += `    `;
-template += user.name;
-
-})
-template += `</div>`;
 template += `
 <script>
     let msg = "hello world"
