@@ -1,11 +1,12 @@
-# <div align="center"> Photon-JS </div>
+# <div align="center"> potassium </div>
 
-Photon-JS is a lightweight, easy to learn JavaScript templating engine.
+potassium is a lightweight, easy to learn JavaScript templating engine.
+
 ## Installing 
 For now you can download this remote repository to your local machine and start using it right away.
   
 ## Documentation
-Read wiki page for documentation. [wiki](http://github.com/Phillip-Rek/Photon-JS/wiki)
+Read wiki page for documentation. [wiki](http://github.com/Phillip-Rek/potassium/wiki)
 
 ## Bug Reporting
 
