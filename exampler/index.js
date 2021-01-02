@@ -4,9 +4,9 @@ const fs = require('fs') // this engine requires the fs module
 const ft = require("../src/photon")
 
 
-app.engine('ft', ft.engine)
+app.engine('html', ft.engine)
 app.set('views', './views') // specify the views directory
-app.set('view engine', 'ft') // register the template engine
+app.set('view engine', 'html') // register the template engine
 
 app.get('/', function (req, res) {
     res.render('main', {
