@@ -5,8 +5,8 @@ const ft = require("../src/photon")
 
 
 app.engine('html', ft.engine)
-app.set('views', './views') // specify the views directory
-app.set('view engine', 'html') // register the template engine
+app.set('views', './views')
+app.set('view engine', 'html')
 
 app.get('/', function (req, res) {
     res.render('main', {
