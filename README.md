@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # <div align="center"> <div style="background-color: skyblue;display: flex;flex-wrap: wrap;justify-content: center;"><h1 style="box-shadow: 2px 2px 6px black;background-color: aqua; text-align: center;padding: 10px;border-radius: 7px;max-width: 800px;width: fit-content;"><span style="font-weight: bolder; color: blue;">K</span> <br> Pottassium.js</h1></div> </div>
+=======
+# <div align="center"> potassium </div>
+>>>>>>> parent of 5fc4d1d... updated readme.md
 
 potassium is a lightweight, easy to learn JavaScript templating engine.
 
