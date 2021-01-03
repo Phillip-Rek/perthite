@@ -1,4 +1,4 @@
-# <div align="center"> potassium </div>
+# <div align="center"> <div style="padding: 20px;background-color: rgb(206, 219, 215);display: flex;flex-wrap: wrap;justify-content: center;"><h1 style="box-shadow: 2px 2px 6px black;background-color: aqua; text-align: center;padding: 20px;border-radius: 7px;max-width: 800px;width: fit-content;"><span style="font-weight: bolder;font-size: 100px; color: blue;">K</span> <br> Pottassium.js</h1></div> </div>
 
 potassium is a lightweight, easy to learn JavaScript templating engine.
 
