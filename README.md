@@ -17,7 +17,7 @@ Your Issues are more welcome, Help us improve Photon-JS by reporting any bugs yo
 Check out for open issues and start contributing Today. You don't have to be a super genius in order to contribute, as this project is still small. You can also contribute by improving the documentation.
 
 ## License
-[MIT](https://chooselicense.com/license/mit/)
+[MIT](http://opensource.org/licenses/MIT)
 
 Copyright (c) 2020 Phillip Rekhotho
 
