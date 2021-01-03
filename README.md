@@ -6,7 +6,7 @@ potassium is a lightweight, easy to learn JavaScript templating engine.
 For now you can download this remote repository to your local machine and start using it right away.
   
 ## Documentation
-Read wiki page for documentation. [wiki](http://github.com/Phillip-Rek/potassium/wiki)
+Documentation can be found on the [wiki](http://github.com/Phillip-Rek/potassium/wiki) page as well as on the [github page](http://Phillip-Rek.github.io/)
 
 ## Bug Reporting
 
