@@ -7,14 +7,16 @@
     "start": "nodemon exampler/index.js"
   },
   "keywords": [
-    "Photon-JS",
-    "Photon",
     "Javascript",
-    "Templating",
-    "Light Weight"
+    "Templating Engine",
+    "NodeJs",
+    "HTML",
+    "ExpressJS"
   ],
   "author": "Phillip Rekhotho",
   "license": "MIT",
   "devDependencies": {},
-  "dependencies": {}
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
