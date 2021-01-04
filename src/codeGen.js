@@ -8,6 +8,7 @@ var mode = "development";
 var templateBuffer = 'let template = \`\`\n';
 var buffer = "";
 var globalVars = "";
+var status;
 var GenerateCode = /** @class */ (function () {
     function GenerateCode(ast, data, file) {
         this.blockStatementsStack = 0;
@@ -64,9 +65,16 @@ var GenerateCode = /** @class */ (function () {
                     expression = "`" + expression + "`";
                     break;
             }
-            globalVars += "let " + identifier + " = " + expression + ";\n";
-            buffer += "let " + identifier + " = " + expression + ";\n";
+            if (!status) {
+                globalVars += "let " + identifier + " = " + expression + ";\n";
+                buffer += "let " + identifier + " = " + expression + ";\n";
+            }
+            else {
+                globalVars += identifier + " = " + expression + ";\n";
+                buffer += identifier + " = " + expression + ";\n";
+            }
         }
+        status = 1;
         this.visitChildren(node);
     };
     GenerateCode.prototype.visitChildren = function (node) {
@@ -260,7 +268,6 @@ function render(tmplateSrsCode, file, data) {
 }
 exports.render = render;
 function engine(filePath, options, callback) {
-    // define the template engine
     fs.readFile(filePath, function (err, content) {
         if (err)
             return callback(err);

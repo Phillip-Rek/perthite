@@ -8,6 +8,7 @@ declare type AstNode = Partial<ASTElement>;
 let templateBuffer: string = 'let template = \`\`\n';
 let buffer = "";
 let globalVars = "";
+let status;
 class GenerateCode {
     constructor(ast: AstNode, data: any, file: string) {
         this.node = ast;
@@ -55,9 +56,16 @@ class GenerateCode {
                     expression = `\`${expression}\``;
                     break;
             }
-            globalVars += `let ${identifier} = ${expression};\n`;
-            buffer += `let ${identifier} = ${expression};\n`;
+            if (!status) {
+                globalVars += `let ${identifier} = ${expression};\n`;
+                buffer += `let ${identifier} = ${expression};\n`;
+            }
+            else {
+                globalVars += `${identifier} = ${expression};\n`;
+                buffer += `${identifier} = ${expression};\n`;
+            }
         }
+        status = 1;
         this.visitChildren(node);
     }
     private visitChildren(node: AstNode) {
@@ -279,7 +287,6 @@ export function engine(
     options: {},
     callback: (arg: any, arg2?: any) => string
 ) {
-    // define the template engine
     fs.readFile(filePath, (err, content) => {
         if (err) return callback(err)
         let res = render(content.toString(), filePath, options);
