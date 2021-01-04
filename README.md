@@ -1,13 +1,13 @@
 
-# <div align="center"> potassium </div>
+# <div align="center"> Perthite </div>
 
-potassium is a lightweight, easy to learn JavaScript templating engine.
+perthite is a lightweight, easy to learn JavaScript templating engine.
 
 ## Installing 
 For now you can download this remote repository to your local machine and start using it right away.
   
 ## Documentation
-Documentation can be found on the [wiki](http://github.com/Phillip-Rek/potassium/wiki) page as well as on the [github page](http://Phillip-Rek.github.io/)
+Documentation can be found on the [wiki](http://github.com/Phillip-Rek/perthite/wiki) page as well as on the [github page](http://Phillip-Rek.github.io/)
 
 ## Bug Reporting
 

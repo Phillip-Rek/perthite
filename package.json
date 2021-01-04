@@ -11,7 +11,8 @@
     "Templating Engine",
     "NodeJs",
     "HTML",
-    "ExpressJS"
+    "ExpressJS",
+    "Perthite"
   ],
   "author": "Phillip Rekhotho",
   "license": "MIT",
