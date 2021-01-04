@@ -264,7 +264,7 @@ export function render(tmplateSrsCode: string, file: string, data: {}) {
     let AST = JSON.parse(JSON.stringify(new Parser(tokens).getAST()));
     let template = new GenerateCode(AST, data, file).compile();
 
-    fs.writeFileSync(__dirname + '/template.js', template, "utf8")
+    //    fs.writeFileSync(__dirname + '/template.js', template, "utf8")
     let output;
     if (mode === "development") {
         let output = new Function(template + "return template;\n")();
@@ -276,7 +276,7 @@ export function render(tmplateSrsCode: string, file: string, data: {}) {
             return output
         }
         catch (e) {
-            console.error("failed to compile");
+            console.error("failed to compile: " + e);
             return output
             //return "<h1 style='color: red'>failed to compile</h1>"
         }
