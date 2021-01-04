@@ -4,7 +4,7 @@
 perthite is a lightweight, easy to learn JavaScript templating engine.
 
 ## Installing 
-For now you can download this remote repository to your local machine and start using it right away.
+First you need to have Nodejs installed in your machine. Go to your terminal and run npm i perthite
   
 ## Documentation
 Documentation can be found on the [wiki](http://github.com/Phillip-Rek/perthite/wiki) page as well as on the [github page](http://Phillip-Rek.github.io/)
