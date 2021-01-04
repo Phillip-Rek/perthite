@@ -2,7 +2,8 @@ import { Parser, ASTElement } from './parser';
 import { Lexer, forEach_Re } from './lexer';
 import * as fs from "fs"
 
-let mode = "development"
+let mode = process.env.NODE_ENV || "development";
+
 declare type AstNode = Partial<ASTElement>;
 
 let templateBuffer: string = 'let template = \`\`\n';

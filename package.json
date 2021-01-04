@@ -1,5 +1,5 @@
 {
-  "name": "photon-js",
+  "name": "potassium",
   "version": "1.0.0",
   "description": "Light Weight Javascript Templating Engine",
   "main": "exampler/index.js",
