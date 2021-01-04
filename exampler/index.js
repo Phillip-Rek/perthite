@@ -1,11 +1,10 @@
-const express = require("express");
+/*const express = require("express");
 const app = express();
-const fs = require('fs') // this engine requires the fs module
-const ft = require("../src/photon")
+const perthite = require("../src/perthite")
 
 
-app.engine('html', ft.engine)
-app.set('views', 'views')
+app.engine('html', perthite.engine)
+app.set('views', 'exampler/views')
 app.set('view engine', 'html')
 
 app.get('/', function (req, res) {
@@ -36,3 +35,5 @@ app.listen(3000, (err) => {
     return err && console.err(err) ||
         console.log("server started on port 3000")
 })
+
+*/

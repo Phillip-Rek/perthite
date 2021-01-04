@@ -2,7 +2,7 @@
   "name": "perthite",
   "version": "1.0.1",
   "description": "Light Weight Javascript Templating Engine",
-  "main": "exampler/index.js",
+  "main": "index.js",
   "scripts": {
     "start": "nodemon exampler/index.js"
   },

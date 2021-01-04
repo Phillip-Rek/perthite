@@ -9,6 +9,6 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
 exports.__esModule = true;
 exports.engine = exports.render = void 0;
 //expose the most important methods of this engine
-var photon_1 = require("./src/photon");
-__createBinding(exports, photon_1, "render");
-__createBinding(exports, photon_1, "engine");
+var perthite_1 = require("./src/perthite");
+__createBinding(exports, perthite_1, "render");
+__createBinding(exports, perthite_1, "engine");

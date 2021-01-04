@@ -43,9 +43,7 @@ var GenerateCode = /** @class */ (function () {
                 break;
         }
     }
-    GenerateCode.prototype.compile = function () {
-        return buffer;
-    };
+    GenerateCode.prototype.compile = function () { return buffer; };
     GenerateCode.prototype.initProgram = function (node) {
         buffer = templateBuffer;
         //declare local variables
@@ -70,7 +68,8 @@ var GenerateCode = /** @class */ (function () {
             if (!status) {
                 globalVars += "let " + identifier + " = " + expression + ";\n";
                 buffer += "let " + identifier + " = " + expression + ";\n";
-            } else {
+            }
+            else {
                 globalVars += identifier + " = " + expression + ";\n";
                 buffer += identifier + " = " + expression + ";\n";
             }
@@ -124,7 +123,8 @@ var GenerateCode = /** @class */ (function () {
                     col: node.col
                 });
                 buffer = buffer.concat("template += '\"';\n");
-            } else {
+            }
+            else {
                 buffer = buffer.concat("template += ` " + attr + "`;\n");
             }
         }
@@ -144,10 +144,12 @@ var GenerateCode = /** @class */ (function () {
             var end = statement.lastIndexOf(")") + 1;
             statement = statement.slice(start, end);
             statementForTest = "if(false){}" + statement;
-        } else if (statement.search(/{{[ ]*else[ ]*}}/) === 0) {
+        }
+        else if (statement.search(/{{[ ]*else[ ]*}}/) === 0) {
             statement = statement.slice(2, -2).trim();
             statementForTest = "if(false){}" + statement;
-        } else {
+        }
+        else {
             var start = statement.indexOf("if");
             var end = statement.lastIndexOf(")") + 1;
             statement = statement.slice(start, end);
@@ -167,7 +169,8 @@ var GenerateCode = /** @class */ (function () {
             statementForTest = globalVars + locals + statementForTest;
             try {
                 new Function(statementForTest + "{}")();
-            } catch (e) {
+            }
+            catch (e) {
                 console.error(e + " at line " +
                     node.ifStatement.line + ", col " +
                     node.ifStatement.col + " " +
@@ -196,7 +199,8 @@ var GenerateCode = /** @class */ (function () {
             this.visitChildren(node);
             buffer += "\n})\n";
             statementForTest = globalVars + "\n" + statement + "=>{})";
-        } else {
+        }
+        else {
             statement = statement.slice(2, -2).trim();
             buffer += statement + "{\n";
             this.visitChildren(node);
@@ -206,7 +210,8 @@ var GenerateCode = /** @class */ (function () {
         if (mode === "development") {
             try {
                 new Function(statementForTest)();
-            } catch (e) {
+            }
+            catch (e) {
                 console.error(e + " at line " +
                     node.ForStatement.line + " col " +
                     node.ForStatement.col + " " +
@@ -236,7 +241,6 @@ var GenerateCode = /** @class */ (function () {
     };
     return GenerateCode;
 }());
-
 function render(tmplateSrsCode, file, data) {
     // if (!tmplateSrsCode) {
     //     tmplateSrsCode = fs.readFileSync(file, "utf8").toString()
@@ -244,24 +248,25 @@ function render(tmplateSrsCode, file, data) {
     var tokens = new lexer_1.Lexer(tmplateSrsCode).tokenize();
     var AST = JSON.parse(JSON.stringify(new parser_1.Parser(tokens).getAST()));
     var template = new GenerateCode(AST, data, file).compile();
-    fs.writeFileSync(__dirname + '/template.js', template, "utf8");
+    //    fs.writeFileSync(__dirname + '/template.js', template, "utf8")
     var output;
     if (mode === "development") {
         var output_1 = new Function(template + "return template;\n")();
         return output_1;
-    } else {
+    }
+    else {
         try {
             output = new Function(template + "return template;\n")();
             return output;
-        } catch (e) {
-            console.error("failed to compile");
+        }
+        catch (e) {
+            console.error("failed to compile: " + e);
             return output;
             //return "<h1 style='color: red'>failed to compile</h1>"
         }
     }
 }
 exports.render = render;
-
 function engine(filePath, options, callback) {
     fs.readFile(filePath, function (err, content) {
         if (err)
