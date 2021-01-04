@@ -74,7 +74,7 @@ var GenerateCode = /** @class */ (function () {
                 buffer += identifier + " = " + expression + ";\n";
             }
         }
-        status = 1;
+        status = true;
         this.visitChildren(node);
     };
     GenerateCode.prototype.visitChildren = function (node) {
@@ -161,8 +161,8 @@ var GenerateCode = /** @class */ (function () {
         var locals = '';
         for (var _i = 0, _a = node.locals; _i < _a.length; _i++) {
             var local = _a[_i];
-            if (globalVars.search(new RegExp("let " + local + " = ")) === -1) {
-                locals += "let " + local + " = undefined;\n";
+            if (globalVars.search(new RegExp("let " + local)) === -1) {
+                locals += local + ";\n";
             }
         }
         if (mode === "development") {

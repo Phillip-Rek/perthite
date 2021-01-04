@@ -95,9 +95,12 @@ export class Parser {
         }
         let local = token.val;
         local = local.slice(local.indexOf("let") + 3, local.search(/[oi][nf]/)).trim()
+        let arr = token.val;
+        arr = arr.slice(arr.indexOf("of") + 2, arr.lastIndexOf(")"));
+        arr = arr.trim()
         let el = this.parseSimpleAstElement(token);
         if (this.currentNode.locals) {
-            this.currentNode.locals.push(local)
+            this.currentNode.locals.push("let " + local + "=" + arr + "[0]")
         }
         this.currentNode.ForStatement = el;
     }

@@ -66,7 +66,7 @@ class GenerateCode {
                 buffer += `${identifier} = ${expression};\n`;
             }
         }
-        status = 1;
+        status = true;
         this.visitChildren(node);
     }
     private visitChildren(node: AstNode) {
@@ -155,8 +155,8 @@ class GenerateCode {
         //to to able to handle errors
         let locals = '';
         for (const local of node.locals) {
-            if (globalVars.search(new RegExp(`let ${local} = `)) === -1) {
-                locals += "let " + local + " = undefined;\n"
+            if (globalVars.search(new RegExp(`let ${local}`)) === -1) {
+                locals += local + ";\n"
             }
         }
         if (mode === "development") {
