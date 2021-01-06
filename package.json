@@ -18,7 +18,7 @@
     "Phillip Rekhotho"
   ],
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://www.npmjs.com/package/perthite"
   },
   "author": "Phillip Rekhotho",
   "license": "MIT",
