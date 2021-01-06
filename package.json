@@ -17,6 +17,9 @@
     "Templating Library",
     "Phillip Rekhotho"
   ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "author": "Phillip Rekhotho",
   "license": "MIT",
   "devDependencies": {

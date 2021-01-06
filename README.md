@@ -3,6 +3,12 @@
 
 perthite is a lightweight, easy to learn JavaScript templating engine.
 
+## Homepage 
+[phillip-rek.github.io](http://Phillip-Rek.github.io/)
+
+## Repository
+[github.com/Phillip-Rek/perthite](http://github.com/Phillip-Rek/perthite)
+
 ## Installing 
 First you need to have Nodejs installed in your machine. Go to your terminal and run npm i perthite
   
@@ -15,13 +21,11 @@ Your Issues are more welcome, Help us improve Photon-JS by reporting any bugs yo
 
 ## Contributing
 
-Check out for open issues and start contributing Today. You don't have to be a super genius in order to contribute, as this project is still small. You can also contribute by improving the documentation.
+Check out for open issues and start contributing. You can also contribute by improving the documentation or you can write articles about Perthite. Another way of contributing is by asking for features, we would like to hear what features would you like is to implement on this library.
 
 ## License
 [MIT](http://opensource.org/licenses/MIT)
 
 Copyright (c) 2020 Phillip Rekhotho
-
-```You have made it this far ?, Please give this project a Star```
 
 

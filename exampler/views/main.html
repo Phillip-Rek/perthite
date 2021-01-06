@@ -1,13 +1,12 @@
-<div class="A" name={{ users[0].name }} {{ if(user === user) }} *onclick="handler(name, name)">
+<div class="A" name={{ users[0].name }} *onclick="handler(name, name)">
     <input type="text" value={{users[0].name}} onkeypress="console.log(988889898)" />
-    <div {{ for(let user of users) }} {{ if(users === users) }}>
-        <h1>content {{ user.name }}</h1>
+    <div {{ for(let user of users) }}>
+        <h1 {{ if(user.name = "User-1") }}>content {{ user.name }}</h1>
     </div>
     <div {{ for(let us of users) }}>
         <h1>{{ us.name }}</h1>
     </div>
 </div>
-<h2 {{ else if(user === user ) }}>test 1 :--- {{ users[0].name }}</h2>
 <ul {{ for(let c of [1, 2, 3, 4, 6, 7]) }}>
     <li> {{ concat(c, " -- HELLO WORLD") }}</li>
 </ul>
