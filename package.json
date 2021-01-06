@@ -1,6 +1,6 @@
 {
   "name": "perthite",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Light Weight Javascript Templating Engine",
   "main": "index.js",
   "scripts": {
@@ -12,12 +12,15 @@
     "NodeJs",
     "HTML",
     "ExpressJS",
-    "Perthite"
+    "Perthite",
+    "perthiteJS",
+    "Templating Library",
+    "Phillip Rekhotho"
   ],
   "author": "Phillip Rekhotho",
   "license": "MIT",
-  "devDependencies": {},
-  "dependencies": {
+  "devDependencies": {
     "express": "^4.17.1"
-  }
+  },
+  "dependencies": {}
 }
