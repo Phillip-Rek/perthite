@@ -1,7 +1,7 @@
 
 # <div align="center"> Perthite </div>
 
-perthite is a lightweight, easy to learn JavaScript templating engine.
+Perthite is a lightweight, easy to learn JavaScript templating engine.
 
 ## Homepage 
 [phillip-rek.github.io](http://Phillip-Rek.github.io/)
