@@ -1,6 +1,6 @@
 {
   "name": "perthite",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Light Weight Javascript Templating Engine",
   "main": "index.js",
   "scripts": {

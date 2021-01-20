@@ -19,7 +19,7 @@ const forStatement_Re = /for=["']let[ \w.$\[\],;:'"]+['"]/;
 const forStatement_Re_2 = /{{[ ]*for\([ a-zA-Z0-9_\w.$\[\]=<>\-+,]+\)[ ]*}}/;
 export const forEach_Re = /{{[ ]*[a-zA-Z0-9.\[\]_]+[.]forEach\(\([ a-zA-Z0-9,._]+\)=>\)[ ]*}}/;
 const on_Re = /\*on[a-z]+="[ a-z0-9_\(\).,]+"/i;
-const text_Re = /[ \w"'=\(\)\n\t!&^%$#@\-:_+\\/,.?\[\]>]+/i;
+const text_Re = /[ \w"'=\(\)\n\t!&^%$#@{}\-:_+\\/,.?\[\]>]+/i;
 const openTagStart_Re = /<[-_;:&%$#@+=*\w]+/i;
 const attribute_Re = /[-_:&$#@*\w]+=["|'][ '\w\-_.:&$#@\(\)\{\}\*\/]+['|"]/i;
 const dynamicAttr_Re = /[-_:*a-z0-9]+={{[ a-z0-9._\[\]]+}}/i;

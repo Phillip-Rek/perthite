@@ -22,7 +22,7 @@ var forStatement_Re = /for=["']let[ \w.$\[\],;:'"]+['"]/;
 var forStatement_Re_2 = /{{[ ]*for\([ a-zA-Z0-9_\w.$\[\]=<>\-+,]+\)[ ]*}}/;
 exports.forEach_Re = /{{[ ]*[a-zA-Z0-9.\[\]_]+[.]forEach\(\([ a-zA-Z0-9,._]+\)=>\)[ ]*}}/;
 var on_Re = /\*on[a-z]+="[ a-z0-9_\(\).,]+"/i;
-var text_Re = /[ \w"'=\(\)\n\t!&^%$#@\-:_+\\/,.?\[\]>]+/i;
+var text_Re = /[ \w"'=\(\)\n\t!&^%$#@{}\-:_+\\/,.?\[\]>]+/i;
 var openTagStart_Re = /<[-_;:&%$#@+=*\w]+/i;
 var attribute_Re = /[-_:&$#@*\w]+=["|'][ '\w\-_.:&$#@\(\)\{\}\*\/]+['|"]/i;
 var dynamicAttr_Re = /[-_:*a-z0-9]+={{[ a-z0-9._\[\]]+}}/i;
