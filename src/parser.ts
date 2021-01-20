@@ -179,5 +179,9 @@ export class Parser {
         token.type = "Text"
         return this.parseText(token)
     }
+    private parseDocType(token: Token) {
+        token.type = "Text"
+        return this.parseText(token)
+    }
 }
 

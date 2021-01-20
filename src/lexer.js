@@ -229,11 +229,6 @@ var Lexer = /** @class */ (function () {
                     val: this.setDocType,
                     pos: Object.freeze(__assign({}, this.pos))
                 });
-                console.log({
-                    type: "DocType",
-                    val: this.setDocType,
-                    pos: Object.freeze(__assign({}, this.pos))
-                });
                 this.consume(this.setDocType);
             }
             else if (this.comparisonOp) {

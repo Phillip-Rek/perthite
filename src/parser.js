@@ -166,6 +166,11 @@ var Parser = /** @class */ (function () {
         token.type = "Text";
         return this.parseText(token);
     };
+    Parser.prototype.parseDocType = function (token) {
+        console.log(token);
+        token.type = "Text";
+        return this.parseText(token);
+    };
     return Parser;
 }());
 exports.Parser = Parser;
