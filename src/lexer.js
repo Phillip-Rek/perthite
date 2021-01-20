@@ -52,6 +52,10 @@ var Lexer = /** @class */ (function () {
                     this.consume(jsCode);
                 }
                 else if (this.metaTag) {
+                    //in case its a meta tag
+                    //parse it as text,  I dont't s
+                    //ee the need of creating a 
+                    //separate token for this
                     var metaTagToken = this.metaTag;
                     this.consume(this.metaTag);
                     while (this.whiteSpace || this.attribute) {
