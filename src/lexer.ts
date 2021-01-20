@@ -231,12 +231,6 @@ export class Lexer {
                     val: this.setDocType,
                     pos: Object.freeze({ ...this.pos })
                 })
-
-                console.log({
-                    type: "DocType",
-                    val: this.setDocType,
-                    pos: Object.freeze({ ...this.pos })
-                })
                 this.consume(this.setDocType);
             }
             else if (this.comparisonOp) {
