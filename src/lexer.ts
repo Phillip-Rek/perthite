@@ -28,6 +28,8 @@ const link_Re = /href=["'][a-z\-\;0-9\://. ]+['"]/i;
 const dynamicData_Re = /{{[ ]*[a-z0-9_.$\[\]\(\)\+"'\-_, ]+[ ]*}}/i;
 const closeTag_Re = /<\/[-_;:&%$#@+=*\w]+>/i;
 const javascriptSrc_Reg = /<script>[ \w"'=\(\)\n\t!&^%$#@\-:_<>+\/,.\?\[\]><?;\\]+<\/script>/i;
+const setDocType_Reg = `<!DOCTYPE html>`;
+
 export class Lexer {
     private pos: Pos = { col: 1, row: 1 };
     private cursor: number;
@@ -223,6 +225,20 @@ export class Lexer {
                 })
                 this.consume(this.closeTag)
             }
+            else if(this.setDocType){
+                this.tokens.push({
+                    type: "DocType",
+                    val: this.setDocType,
+                    pos: Object.freeze({ ...this.pos })
+                })
+
+                console.log({
+                    type: "DocType",
+                    val: this.setDocType,
+                    pos: Object.freeze({ ...this.pos })
+                })
+                this.consume(this.setDocType);
+            }
             else if (this.comparisonOp) {
                 this.tokens.push({
                     type: "Text",
@@ -264,6 +280,11 @@ export class Lexer {
         if (this.doesNotContain(openTagStart_Re)) return false;
         let opTag = this.input.match(openTagStart_Re)[0];
         return this.input.indexOf(opTag) === 0 && opTag;
+    }
+    private get setDocType() {
+        if (this.doesNotContain(setDocType_Reg)) return false;
+        let docType = this.input.match(setDocType_Reg)[0];
+        return this.input.indexOf(docType) === 0 && docType;
     }
     private get attribute() {
         if (this.doesNotContain(attribute_Re)) return false;

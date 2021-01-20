@@ -4,10 +4,10 @@ const perthite = require("../src/perthite")
 
 
 app.engine('html', perthite.engine)
-app.set('views', 'exampler/views')
+app.set('views', 'views')
 app.set('view engine', 'html')
 
-app.get('/', function (req, res) {
+app.get('/', function(req, res) {
     res.render('main', {
         users: [{
                 name: "User-1",
