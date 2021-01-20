@@ -21,7 +21,7 @@ export const forEach_Re = /{{[ ]*[a-zA-Z0-9.\[\]_]+[.]forEach\(\([ a-zA-Z0-9,._]
 const on_Re = /\*on[a-z]+="[ a-z0-9_\(\).,]+"/i;
 const text_Re = /[ \w"'=\(\)\n\t!&^%$#@{}\-:_+\\/,.?\[\]>]+/i;
 const openTagStart_Re = /<[-_;:&%$#@+=*\w]+/i;
-const attribute_Re = /[-_:&$#@*\w]+=["|'][ '\w\-_.:&$#@\(\)\{\}\*\/]+['|"]/i;
+const attribute_Re = /[-_:&$#@*\w]+=["|'][ '\w\-_.:&$#@=,\(\)\{\}\*\/]+['|"]/i;
 const dynamicAttr_Re = /[-_:*a-z0-9]+={{[ a-z0-9._\[\]]+}}/i;
 const css_Re = /style=["'][a-z\-\;0-9\: ]+['"]/i;
 const link_Re = /href=["'][a-z\-\;0-9\://. ]+['"]/i;
@@ -29,6 +29,7 @@ const dynamicData_Re = /{{[ ]*[a-z0-9_.$\[\]\(\)\+"'\-_, ]+[ ]*}}/i;
 const closeTag_Re = /<\/[-_;:&%$#@+=*\w]+>/i;
 const javascriptSrc_Reg = /<script>[ \w"'=\(\)\n\t!&^%$#@\-:_<>+\/,.\?\[\]><?;\\]+<\/script>/i;
 const setDocType_Reg = `<!DOCTYPE html>`;
+const metaTag_Reg = /<meta/i;
 
 export class Lexer {
     private pos: Pos = { col: 1, row: 1 };
@@ -47,7 +48,22 @@ export class Lexer {
                         val: jsCode,
                         pos: Object.freeze({ ...this.pos })
                     })
-                    this.consume(jsCode)
+                    this.consume(jsCode);
+                }
+                else if(this.metaTag){
+                    let metaTagToken = this.metaTag;
+                    this.consume(this.metaTag);
+
+                    while(this.whiteSpace || this.attribute){
+                        let tok = this.whiteSpace || this.attribute || "";
+                        this.consume(tok)
+                        metaTagToken+=tok;
+                    }
+                    this.tokens.push({
+                        type: "Text",
+                        val: metaTagToken+">",
+                        pos: Object.freeze({ ...this.pos })
+                    })
                 }
                 else {
                     this.tokens.push({
@@ -387,6 +403,11 @@ export class Lexer {
         if (this.doesNotContain(forEach_Re)) return false;
         let foreach = this.input.match(forEach_Re)[0];
         return this.input.indexOf(foreach) === 0 && foreach;
+    }
+    private get metaTag() {
+        if (this.doesNotContain(metaTag_Reg)) return false;
+        let meta = this.input.match(metaTag_Reg)[0];
+        return this.input.indexOf(meta) === 0 && meta;
     }
     private get on() {
         if (this.doesNotContain(on_Re)) return false;

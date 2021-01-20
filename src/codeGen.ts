@@ -261,6 +261,7 @@ export function render(tmplateSrsCode: string, file: string, data: {}) {
     //     tmplateSrsCode = fs.readFileSync(file, "utf8").toString()
     // }
     let tokens = new Lexer(tmplateSrsCode).tokenize();
+    console.log(tokens)
     let AST = JSON.parse(JSON.stringify(new Parser(tokens).getAST()));
     let template = new GenerateCode(AST, data, file).compile();
 

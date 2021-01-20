@@ -9,10 +9,10 @@ var templateBuffer = 'let template = \`\`\n';
 var buffer = "";
 var globalVars = "";
 var status;
-var GenerateCode = /** @class */ (function () {
+var GenerateCode = /** @class */ (function() {
     function GenerateCode(ast, data, file) {
         this.blockStatementsStack = 0;
-        this.extractLocalVariable = function (expression) {
+        this.extractLocalVariable = function(expression) {
             var variable = "";
             for (var i = 0; i < expression.length; i++) {
                 var char = expression[i];
@@ -43,8 +43,8 @@ var GenerateCode = /** @class */ (function () {
                 break;
         }
     }
-    GenerateCode.prototype.compile = function () { return buffer; };
-    GenerateCode.prototype.initProgram = function (node) {
+    GenerateCode.prototype.compile = function() { return buffer; };
+    GenerateCode.prototype.initProgram = function(node) {
         buffer = templateBuffer;
         //declare local variables
         var data = Object.entries(this.data);
@@ -68,8 +68,7 @@ var GenerateCode = /** @class */ (function () {
             if (!status) {
                 globalVars += "let " + identifier + " = " + expression + ";\n";
                 buffer += "let " + identifier + " = " + expression + ";\n";
-            }
-            else {
+            } else {
                 globalVars += identifier + " = " + expression + ";\n";
                 buffer += identifier + " = " + expression + ";\n";
             }
@@ -77,7 +76,7 @@ var GenerateCode = /** @class */ (function () {
         status = true;
         this.visitChildren(node);
     };
-    GenerateCode.prototype.visitChildren = function (node) {
+    GenerateCode.prototype.visitChildren = function(node) {
         var children = node.children;
         var typ = node.name && node.name === "script" && "Text";
         for (var _i = 0, children_1 = children; _i < children_1.length; _i++) {
@@ -86,7 +85,7 @@ var GenerateCode = /** @class */ (function () {
             new GenerateCode(child, this.data, this.file);
         }
     };
-    GenerateCode.prototype.visitHTMLElement = function (node) {
+    GenerateCode.prototype.visitHTMLElement = function(node) {
         var ifStatement = this.visitIfStatement(node);
         if (ifStatement)
             return;
@@ -105,10 +104,10 @@ var GenerateCode = /** @class */ (function () {
         }
         buffer = buffer.concat("template += \`</" + node.name + ">\`;\n");
     };
-    GenerateCode.prototype.visitOpenTag = function (node) {
+    GenerateCode.prototype.visitOpenTag = function(node) {
         buffer = buffer.concat("template += \`<" + node.name + "\`;\n");
     };
-    GenerateCode.prototype.vivitAttributes = function (node) {
+    GenerateCode.prototype.vivitAttributes = function(node) {
         var identifier = /\w={{[ ]*[a-z0-9._\[\]]+[ ]*}}/i;
         for (var _i = 0, _a = node.attributes; _i < _a.length; _i++) {
             var attr = _a[_i];
@@ -123,18 +122,17 @@ var GenerateCode = /** @class */ (function () {
                     col: node.col
                 });
                 buffer = buffer.concat("template += '\"';\n");
-            }
-            else {
+            } else {
                 buffer = buffer.concat("template += ` " + attr + "`;\n");
             }
         }
     };
-    GenerateCode.prototype.visitEvents = function (node) {
-        node.events.forEach(function (ev) {
+    GenerateCode.prototype.visitEvents = function(node) {
+        node.events.forEach(function(ev) {
             // buffer = buffer.concat(` ${ev.val}`)
         });
     };
-    GenerateCode.prototype.visitIfStatement = function (node) {
+    GenerateCode.prototype.visitIfStatement = function(node) {
         if (!node.ifStatement)
             return;
         var statement = node.ifStatement.val;
@@ -144,12 +142,10 @@ var GenerateCode = /** @class */ (function () {
             var end = statement.lastIndexOf(")") + 1;
             statement = statement.slice(start, end);
             statementForTest = "if(false){}" + statement;
-        }
-        else if (statement.search(/{{[ ]*else[ ]*}}/) === 0) {
+        } else if (statement.search(/{{[ ]*else[ ]*}}/) === 0) {
             statement = statement.slice(2, -2).trim();
             statementForTest = "if(false){}" + statement;
-        }
-        else {
+        } else {
             var start = statement.indexOf("if");
             var end = statement.lastIndexOf(")") + 1;
             statement = statement.slice(start, end);
@@ -169,8 +165,7 @@ var GenerateCode = /** @class */ (function () {
             statementForTest = globalVars + locals + statementForTest;
             try {
                 new Function(statementForTest + "{}")();
-            }
-            catch (e) {
+            } catch (e) {
                 console.error(e + " at line " +
                     node.ifStatement.line + ", col " +
                     node.ifStatement.col + " " +
@@ -185,7 +180,7 @@ var GenerateCode = /** @class */ (function () {
         buffer += "}\n";
         return true;
     };
-    GenerateCode.prototype.visitForStatement2 = function (node) {
+    GenerateCode.prototype.visitForStatement2 = function(node) {
         if (!node.ForStatement)
             return;
         //end an open-tag-start
@@ -199,8 +194,7 @@ var GenerateCode = /** @class */ (function () {
             this.visitChildren(node);
             buffer += "\n})\n";
             statementForTest = globalVars + "\n" + statement + "=>{})";
-        }
-        else {
+        } else {
             statement = statement.slice(2, -2).trim();
             buffer += statement + "{\n";
             this.visitChildren(node);
@@ -210,8 +204,7 @@ var GenerateCode = /** @class */ (function () {
         if (mode === "development") {
             try {
                 new Function(statementForTest)();
-            }
-            catch (e) {
+            } catch (e) {
                 console.error(e + " at line " +
                     node.ForStatement.line + " col " +
                     node.ForStatement.col + " " +
@@ -219,10 +212,10 @@ var GenerateCode = /** @class */ (function () {
             }
         }
     };
-    GenerateCode.prototype.visitText = function (node) {
+    GenerateCode.prototype.visitText = function(node) {
         buffer += "template += \`" + node.val + "\`;\n";
     };
-    GenerateCode.prototype.visitDynamicData = function (node) {
+    GenerateCode.prototype.visitDynamicData = function(node) {
         var val = node.val.slice(2, -2).trim();
         //get a variable from expression like users[0]
         //let variable = this.extractLocalVariable(val)
@@ -232,7 +225,7 @@ var GenerateCode = /** @class */ (function () {
         // }
         buffer = buffer.concat("template += " + val + ";\n");
     };
-    GenerateCode.prototype.refErr = function (node) {
+    GenerateCode.prototype.refErr = function(node) {
         var msg = node.val +
             " is not defined at line : " +
             node.line + " col: " +
@@ -241,6 +234,7 @@ var GenerateCode = /** @class */ (function () {
     };
     return GenerateCode;
 }());
+
 function render(tmplateSrsCode, file, data) {
     // if (!tmplateSrsCode) {
     //     tmplateSrsCode = fs.readFileSync(file, "utf8").toString()
@@ -253,13 +247,11 @@ function render(tmplateSrsCode, file, data) {
     if (mode === "development") {
         var output_1 = new Function(template + "return template;\n")();
         return output_1;
-    }
-    else {
+    } else {
         try {
             output = new Function(template + "return template;\n")();
             return output;
-        }
-        catch (e) {
+        } catch (e) {
             console.error("failed to compile: " + e);
             return output;
             //return "<h1 style='color: red'>failed to compile</h1>"
@@ -267,8 +259,9 @@ function render(tmplateSrsCode, file, data) {
     }
 }
 exports.render = render;
+
 function engine(filePath, options, callback) {
-    fs.readFile(filePath, function (err, content) {
+    fs.readFile(filePath, function(err, content) {
         if (err)
             return callback(err);
         var res = render(content.toString(), filePath, options);

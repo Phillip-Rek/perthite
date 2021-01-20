@@ -24,7 +24,7 @@ exports.forEach_Re = /{{[ ]*[a-zA-Z0-9.\[\]_]+[.]forEach\(\([ a-zA-Z0-9,._]+\)=>
 var on_Re = /\*on[a-z]+="[ a-z0-9_\(\).,]+"/i;
 var text_Re = /[ \w"'=\(\)\n\t!&^%$#@{}\-:_+\\/,.?\[\]>]+/i;
 var openTagStart_Re = /<[-_;:&%$#@+=*\w]+/i;
-var attribute_Re = /[-_:&$#@*\w]+=["|'][ '\w\-_.:&$#@\(\)\{\}\*\/]+['|"]/i;
+var attribute_Re = /[-_:&$#@*\w]+=["|'][ '\w\-_.:&$#@=,\(\)\{\}\*\/]+['|"]/i;
 var dynamicAttr_Re = /[-_:*a-z0-9]+={{[ a-z0-9._\[\]]+}}/i;
 var css_Re = /style=["'][a-z\-\;0-9\: ]+['"]/i;
 var link_Re = /href=["'][a-z\-\;0-9\://. ]+['"]/i;
@@ -32,6 +32,7 @@ var dynamicData_Re = /{{[ ]*[a-z0-9_.$\[\]\(\)\+"'\-_, ]+[ ]*}}/i;
 var closeTag_Re = /<\/[-_;:&%$#@+=*\w]+>/i;
 var javascriptSrc_Reg = /<script>[ \w"'=\(\)\n\t!&^%$#@\-:_<>+\/,.\?\[\]><?;\\]+<\/script>/i;
 var setDocType_Reg = "<!DOCTYPE html>";
+var metaTag_Reg = /<meta/i;
 var Lexer = /** @class */ (function () {
     function Lexer(input) {
         this.input = input;
@@ -49,6 +50,20 @@ var Lexer = /** @class */ (function () {
                         pos: Object.freeze(__assign({}, this.pos))
                     });
                     this.consume(jsCode);
+                }
+                else if (this.metaTag) {
+                    var metaTagToken = this.metaTag;
+                    this.consume(this.metaTag);
+                    while (this.whiteSpace || this.attribute) {
+                        var tok = this.whiteSpace || this.attribute || "";
+                        this.consume(tok);
+                        metaTagToken += tok;
+                    }
+                    this.tokens.push({
+                        type: "Text",
+                        val: metaTagToken + ">",
+                        pos: Object.freeze(__assign({}, this.pos))
+                    });
                 }
                 else {
                     this.tokens.push({
@@ -489,6 +504,16 @@ var Lexer = /** @class */ (function () {
                 return false;
             var foreach = this.input.match(exports.forEach_Re)[0];
             return this.input.indexOf(foreach) === 0 && foreach;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Lexer.prototype, "metaTag", {
+        get: function () {
+            if (this.doesNotContain(metaTag_Reg))
+                return false;
+            var meta = this.input.match(metaTag_Reg)[0];
+            return this.input.indexOf(meta) === 0 && meta;
         },
         enumerable: false,
         configurable: true

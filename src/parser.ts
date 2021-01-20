@@ -159,7 +159,7 @@ export class Parser {
     }
     parseCloseTag(token: Token) {
         let tagName = token.val.slice(2, -1);
-        if (this.unclosedNodes[this.unclosedNodes.length - 1].name === tagName) {
+        if (this.unclosedNodes[this.unclosedNodes.length - 1].name === tagName ) {
             this.previousElementSibling = this.unclosedNodes[this.unclosedNodes.length - 1]
             this.unclosedNodes.pop();
         }
@@ -179,7 +179,7 @@ export class Parser {
         token.type = "Text"
         return this.parseText(token)
     }
-    private parseDocType(token: Token) {
+    parseDocType(token: Token) {
         token.type = "Text"
         return this.parseText(token)
     }
