@@ -4,12 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="keywords" content="klkl">
     <title>Document</title>
 </head>
 
 <body>
     <h1>hello world</h1>
+    <div {{for(let user of users)}}>
+        <h1>{{user.name}}</h1>
+    </div>
+    <form action="/names/add/${users[1].name}/7/helloworld" method="POST">
+        Name:<input name="username" type="text" />
+    </form>
 </body>
+
 
 </html>
