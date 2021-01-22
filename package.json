@@ -1,26 +1,26 @@
 {
-  "name": "perthite",
-  "version": "1.0.5",
-  "description": "Light Weight Javascript Templating Engine",
-  "main": "index.js",
-  "scripts": {
-    "start": "nodemon exampler/index.js"
-  },
-  "keywords": [
-    "Javascript",
-    "Templating Engine",
-    "NodeJs",
-    "HTML",
-    "ExpressJS",
-    "Perthite",
-    "perthiteJS",
-    "Templating Library",
-    "Phillip Rekhotho"
-  ],
-  "author": "Phillip Rekhotho",
-  "license": "MIT",
-  "devDependencies": {
-    "express": "^4.17.1"
-  },
-  "dependencies": {}
+    "name": "perthite",
+    "version": "1.0.6",
+    "description": "Light Weight Javascript Templating Engine",
+    "main": "index.js",
+    "scripts": {
+        "start": "nodemon exampler/index.js"
+    },
+    "keywords": [
+        "Javascript",
+        "Templating Engine",
+        "NodeJs",
+        "HTML",
+        "ExpressJS",
+        "Perthite",
+        "perthiteJS",
+        "Templating Library",
+        "Phillip Rekhotho"
+    ],
+    "author": "Phillip Rekhotho",
+    "license": "MIT",
+    "devDependencies": {
+        "express": "^4.17.1"
+    },
+    "dependencies": {}
 }
