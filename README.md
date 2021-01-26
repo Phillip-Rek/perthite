@@ -1,7 +1,7 @@
 
 # <div align="center"> Perthite </div>
 
-Perthite is a lightweight, easy to learn JavaScript templating engine.
+Perthite is a lightweight, easy to learn JavaScript Templating Engine.
 
 ## Homepage 
 [phillip-rek.github.io](http://Phillip-Rek.github.io/)
@@ -10,14 +10,14 @@ Perthite is a lightweight, easy to learn JavaScript templating engine.
 [github.com/Phillip-Rek/perthite](http://github.com/Phillip-Rek/perthite)
 
 ## Installing 
-First you need to have Nodejs installed in your machine. Go to your terminal and run npm i perthite
+First you need to have Nodejs installed in your machine. If you have nodejs then Go to your terminal and run npm i perthite
   
 ## Documentation
 Documentation can be found on the [wiki](http://github.com/Phillip-Rek/perthite/wiki) page as well as on the [github page](http://Phillip-Rek.github.io/)
 
 ## Bug Reporting
 
-Your Issues are more welcome, Help us improve Photon-JS by reporting any bugs you may encounter.
+Your Issues are more welcome, Help us improve Perthite by reporting any bugs you may encounter.
 
 ## Contributing
 
