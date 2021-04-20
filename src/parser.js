@@ -1,6 +1,7 @@
 "use strict";
 exports.__esModule = true;
 exports.Parser = void 0;
+var fs = require("fs");
 var Parser = /** @class */ (function () {
     function Parser(tokens) {
         var _this = this;
@@ -25,7 +26,7 @@ var Parser = /** @class */ (function () {
     Parser.prototype.parseOpenTagStart = function (token) {
         var el = {
             type: "HtmlElement",
-            name: token.tagName,
+            name: token.val.substr(1),
             attributes: [],
             events: [],
             currentStatus: "attributes",
@@ -72,7 +73,9 @@ var Parser = /** @class */ (function () {
             token.val = "{{ " + nativeFor + " }}";
         }
         var local = token.val;
-        local = local.slice(local.indexOf("let") + 3, local.search(/[oi][nf]/)).trim();
+        local = local
+            .slice(local.indexOf("let") + 3, local.search(/[oi][nf]/))
+            .trim();
         var arr = token.val;
         arr = arr.slice(arr.indexOf("of") + 2, arr.lastIndexOf(")"));
         arr = arr.trim();
@@ -89,7 +92,7 @@ var Parser = /** @class */ (function () {
         //transforming non-native tyntax to natice syntax
         if (token.val.startsWith("if=")) {
             var nativeIf = token.val;
-            nativeIf = nativeIf.replace(/if=["']/, 'if(').slice(0, -1) + ")";
+            nativeIf = nativeIf.replace(/if=["']/, "if(").slice(0, -1) + ")";
             token.val = "{{ " + nativeIf + " }}";
         }
         var el = this.parseSimpleAstElement(token);
@@ -101,7 +104,8 @@ var Parser = /** @class */ (function () {
         }
         if (token.val.startsWith("else-if=")) {
             var nativeIf = token.val;
-            nativeIf = nativeIf.replace(/else-if=["']/, 'else if(').slice(0, -1) + ")";
+            nativeIf =
+                nativeIf.replace(/else-if=["']/, "else if(").slice(0, -1) + ")";
             token.val = "{{ " + nativeIf + " }}";
         }
         var el = this.parseSimpleAstElement(token);
@@ -125,7 +129,9 @@ var Parser = /** @class */ (function () {
             col: token.pos.col
         };
     };
-    Parser.prototype.parseOpenTagEnd = function () { this.currentNode.currentStatus = "innerHTML"; };
+    Parser.prototype.parseOpenTagEnd = function () {
+        this.currentNode.currentStatus = "innerHTML";
+    };
     Parser.prototype.parseDynamicData = function (token) {
         var el = this.parseSimpleAstElement(token);
         this.currentNode.children.push(el);
@@ -166,10 +172,30 @@ var Parser = /** @class */ (function () {
         token.type = "Text";
         return this.parseText(token);
     };
+    Parser.prototype.parseInnerHTML = function (token) {
+        return this.parseAsInnerHTML(token);
+    };
     Parser.prototype.parseDocType = function (token) {
+        token.type = "Text";
+        return this.parseText(token);
+    };
+    //change a meta-tag into text
+    Parser.prototype.parseMetaTag = function (token) {
         token.type = "Text";
         return this.parseText(token);
     };
     return Parser;
 }());
 exports.Parser = Parser;
+// let lexerInput = null;
+// fs.readFile("index.html", "utf8", (err, data)=>{
+//     if(err) throw err;
+//     else lexerInput = data;
+//     var tokens = new Lexer(lexerInput, "index.html").tokenize();
+//     //console.log(tokens);
+//     let ast = new Parser(tokens).getAST()
+//     console.log(ast.children[1])
+//     fs.writeFile("ast.json", JSON.stringify(ast.children[1]), {}, (err)=>{
+//         if(err) throw err;
+//     })
+// })
