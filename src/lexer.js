@@ -12,6 +12,7 @@ var __assign = (this && this.__assign) || function () {
 };
 exports.__esModule = true;
 exports.Lexer = exports.forEach_Re = void 0;
+var fs = require("fs");
 var ifStatement_Re = /if=["][ \w=<>&.\-_'"&\(\)\|]+["]/;
 var ifStatement_Re_2 = /{{[ ]*if\([ \w.$\[\]"'=<>+\-,&\(\)\|]+\)[ ]*}}/;
 var elseIfStatement_Re = /else-if=["][ \w=<>&.\-_'"&\(\)\|]+["]/;
@@ -34,8 +35,9 @@ var javascriptSrc_Reg = /<script>[ \w"'=\(\)\n\t!&^%$#@\-:_<>+\/,.\?\[\]><?;\\]+
 var setDocType_Reg = "<!DOCTYPE html>";
 var metaTag_Reg = /<meta/i;
 var Lexer = /** @class */ (function () {
-    function Lexer(input) {
+    function Lexer(input, file) {
         this.input = input;
+        this.file = file;
         this.pos = { col: 1, row: 1 };
         this.tokens = [];
         this.cursor = 0;
@@ -45,7 +47,7 @@ var Lexer = /** @class */ (function () {
                     var jsCodeEnd = this.input.indexOf("</script>", this.cursor);
                     var jsCode = "\n" + this.input.slice(this.cursor, jsCodeEnd + 9);
                     this.tokens.push({
-                        type: "Text",
+                        type: "JsCode",
                         val: jsCode,
                         pos: Object.freeze(__assign({}, this.pos))
                     });
@@ -54,7 +56,7 @@ var Lexer = /** @class */ (function () {
                 else if (this.metaTag) {
                     //in case its a meta tag
                     //parse it as text,  I dont't s
-                    //ee the need of creating a 
+                    //ee the need of creating a
                     //separate token for this
                     var metaTagToken = this.metaTag;
                     this.consume(this.metaTag);
@@ -64,7 +66,7 @@ var Lexer = /** @class */ (function () {
                         metaTagToken += tok;
                     }
                     this.tokens.push({
-                        type: "Text",
+                        type: "MetaTag",
                         val: metaTagToken + ">",
                         pos: Object.freeze(__assign({}, this.pos))
                     });
@@ -73,7 +75,6 @@ var Lexer = /** @class */ (function () {
                     this.tokens.push({
                         type: "OpenTagStart",
                         val: this.openTagStart,
-                        tagName: this.openTagStart.substring(1),
                         pos: Object.freeze(__assign({}, this.pos))
                     });
                     this.currentStatus = "attributes";
@@ -195,8 +196,7 @@ var Lexer = /** @class */ (function () {
             }
             else if (this.whiteSpace) {
                 var lastToken = this.tokens[this.tokens.length - 1].type;
-                if (lastToken !== "CloseTag" &&
-                    lastToken !== "SelfClosingTag") {
+                if (lastToken !== "CloseTag" && lastToken !== "SelfClosingTag") {
                     this.tokens.push({
                         type: "Text",
                         val: this.whiteSpace,
@@ -211,24 +211,24 @@ var Lexer = /** @class */ (function () {
             }
             else if (this.dynamicData) {
                 var type = void 0;
-                if (this.dynamicData.search(elseStatement_Re_2) > -1 && this.currentStatus === "attributes") {
+                if (this.dynamicData.search(elseStatement_Re_2) > -1 &&
+                    this.currentStatus === "attributes") {
                     type = "IfStatement";
                 }
                 else {
                     type = "DynamicData";
                 }
                 this.tokens.push({
-                    type: type,
+                    type: "DynamicData",
                     val: this.dynamicData,
                     pos: Object.freeze(__assign({}, this.pos))
                 });
                 this.consume(this.dynamicData);
             }
             else if (this.text) {
-                var type = this.currentStatus = "innerHTML" ?
-                    "Text" : "Attribute";
+                var type = (this.currentStatus = "innerHTML" ? "Text" : "Attribute");
                 this.tokens.push({
-                    type: type,
+                    type: "InnerHTML",
                     val: this.text,
                     pos: Object.freeze(__assign({}, this.pos))
                 });
@@ -492,17 +492,12 @@ var Lexer = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(Lexer.prototype, "lexJSCode", {
-        get: function () {
-            if (this.doesNotContain(javascriptSrc_Reg))
-                return false;
-            var forStatement = this.input.match(forStatement_Re)[0];
-            return this.input.indexOf(forStatement) === 0 && forStatement;
-        },
-        enumerable: false,
-        configurable: true
-    });
     Object.defineProperty(Lexer.prototype, "forEach", {
+        // private get lexJSCode() {
+        //     if (this.doesNotContain(javascriptSrc_Reg)) return false;
+        //     let forStatement = this.input.match(forStatement_Re)[0];
+        //     return this.input.indexOf(forStatement) === 0 && forStatement;
+        // }
         get: function () {
             if (this.doesNotContain(exports.forEach_Re))
                 return false;
@@ -541,3 +536,13 @@ var Lexer = /** @class */ (function () {
     return Lexer;
 }());
 exports.Lexer = Lexer;
+var lexerInput;
+// fs.readFile("index.html", "utf8", (err, data)=>{
+//     if(err) throw err;
+//     else lexerInput = data;
+//     var tokens = new Lexer(lexerInput, "index.html").tokenize();
+//     console.log(tokens);
+//     fs.writeFile("ast.json", JSON.stringify(tokens), {}, (err)=>{
+//         if(err) throw err;
+//     })
+// })
