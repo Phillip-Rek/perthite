@@ -249,28 +249,27 @@ var GenerateCode = /** @class */ (function () {
     return GenerateCode;
 }());
 function render(tmplateSrsCode, file, data) {
-    // if (!tmplateSrsCode) {
-    //     tmplateSrsCode = fs.readFileSync(file, "utf8").toString()
-    // }
-    var tokens = new lexer_1.Lexer(tmplateSrsCode, "index.html").tokenize();
-    var AST = JSON.parse(JSON.stringify(new parser_1.Parser(tokens).getAST()));
-    var template = new GenerateCode(AST, data, file).compile();
-    //    fs.writeFileSync(__dirname + '/template.js', template, "utf8")
-    var output;
+    /*
+    check if a bin directory for template-files
+    is present, if it's not then create it
+    */
+    let binDir = file.slice(0, file.lastIndexOf("/")) + "/bin";
+    let binTemplateFile = file.slice(file.lastIndexOf("/"), file.lastIndexOf(".html")) + ".js";
+
     if (mode === "development") {
-        var output_1 = new Function(template + "return template;\n")();
-        return output_1;
+        var tokens = new lexer_1.Lexer(tmplateSrsCode, "index.html").tokenize();
+        var AST = JSON.parse(JSON.stringify(new parser_1.Parser(tokens).getAST()));
+        var template = new GenerateCode(AST, data, file).compile();
+
+        if (!fs.realpathSync(binDir, "utf-8"))
+            fs.mkdirSync(binDir);
+        fs.writeFileSync(binDir + binTemplateFile, template);
+
+        return new Function(template + "return template;\n")();
     }
     else {
-        try {
-            output = new Function(template + "return template;\n")();
-            return output;
-        }
-        catch (e) {
-            console.error("failed to compile: " + e);
-            return output;
-            //return "<h1 style='color: red'>failed to compile</h1>"
-        }
+        let jsCode = fs.readFileSync(binDir + binTemplateFile, "utf-8");
+        return new Function(jsCode + "return template;\n")();
     }
 }
 exports.render = render;
