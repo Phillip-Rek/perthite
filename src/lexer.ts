@@ -10,8 +10,7 @@ export declare type Token = {
   val: string;
   pos: Pos;
 };
-const ifStatement_Re = /if=["][ \w=<>&.\-_'"&\(\)\|]+["]/;
-const ifStatement_Re_2 = /{{[ ]*if\([ \w.$\[\]"'=<>+\-,&\(\)\|]+\)[ ]*}}/;
+const ifStatement_Re = /{{[ ]*if\([ \w.$\[\]"'=<>+\-,&\(\)\|]+\)[ ]*}}/;
 const elseIfStatement_Re = /else-if=["][ \w=<>&.\-_'"&\(\)\|]+["]/;
 const elseIfStatement_Re_2 = /{{[ ]*else if\([ \w.$\[\]"'=<>+\-,'"&\(\)\|]+\)[ ]*}}/;
 const elseStatement_Re = /else/;
@@ -39,7 +38,7 @@ export class Lexer {
   private currentStatus: string;
   constructor(private input: string, private file: string) {
     this.cursor = 0;
-    for (;;) {
+    for (; ;) {
       if (this.openTagStart) {
         if (this.openTagStart === "<script") {
           let jsCodeEnd = this.input.indexOf("</script>", this.cursor);
