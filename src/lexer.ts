@@ -12,8 +12,7 @@ export declare type Token = {
 };
 const ifStatement_Re = /{{[ ]*if\([ \w.$\[\]"'=<>+\-,&\(\)\|]+\)[ ]*}}/;
 const elseIfStatement_Re = /{{[ ]*else if\([ \w.$\[\]"'=<>+\-,'"&\(\)\|]+\)[ ]*}}/;
-const elseStatement_Re = /else/;
-const elseStatement_Re_2 = /{{[ ]*else[ ]*}}/;
+const elseStatement_Re = /{{[ ]*else[ ]*}}/;
 const forStatement_Re = /for=["']let[ \w.$\[\],;:'"]+['"]/;
 const forStatement_Re_2 = /{{[ ]*for\([ a-zA-Z0-9_\w.$\[\]=<>\-+,]+\)[ ]*}}/;
 export const forEach_Re = /{{[ ]*[a-zA-Z0-9.\[\]_]+[.]forEach\(\([ a-zA-Z0-9,._]+\)=>\)[ ]*}}/;
