@@ -10,6 +10,7 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+
 exports.__esModule = true;
 exports.Lexer = exports.forEach_Re = void 0;
 var fs = require("fs");
