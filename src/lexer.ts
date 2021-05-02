@@ -11,8 +11,7 @@ export declare type Token = {
   pos: Pos;
 };
 const ifStatement_Re = /{{[ ]*if\([ \w.$\[\]"'=<>+\-,&\(\)\|]+\)[ ]*}}/;
-const elseIfStatement_Re = /else-if=["][ \w=<>&.\-_'"&\(\)\|]+["]/;
-const elseIfStatement_Re_2 = /{{[ ]*else if\([ \w.$\[\]"'=<>+\-,'"&\(\)\|]+\)[ ]*}}/;
+const elseIfStatement_Re = /{{[ ]*else if\([ \w.$\[\]"'=<>+\-,'"&\(\)\|]+\)[ ]*}}/;
 const elseStatement_Re = /else/;
 const elseStatement_Re_2 = /{{[ ]*else[ ]*}}/;
 const forStatement_Re = /for=["']let[ \w.$\[\],;:'"]+['"]/;
