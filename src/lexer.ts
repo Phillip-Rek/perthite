@@ -300,28 +300,35 @@ export class Lexer {
     let identifier = this.input.match(dynamicData_Re)[0];
     return this.input.indexOf(identifier) === 0 && identifier;
   }
-  private get comparisonOp() {
-    let compOp_Re = /[<>]/;
+  private get comparisonOp(): string | false {
     if (this.doesNotContain(compOp_Re)) return false;
     let identifier = this.input.match(compOp_Re)[0];
     return this.input.indexOf(identifier) === 0 && identifier;
   }
-  private get closeTag() {
+
+  private get closeTag(): string | false {
     if (this.doesNotContain(closeTag_Re)) return false;
     let closeTag = this.input.match(closeTag_Re)[0];
     return this.input.indexOf(closeTag) === 0 && closeTag;
   }
-  private get text() {
+
+  private get text(): string | false {
     if (this.doesNotContain(text_Re)) return false;
     let text = this.input.match(text_Re)[0];
+    if (text.search(dynamicData_Re) > -1) {
+      let dynamicDataStartPoint = text.search(dynamicData_Re);
+      text = text.substring(0, dynamicDataStartPoint);
+    }
     return this.input.indexOf(text) === 0 && text;
   }
+
   private get whiteSpace() {
     if (this.doesNotContain(/[ \t]+/)) return false;
     let whiteSpace = this.input.match(/[ \t]+/)[0];
     return this.input.indexOf(whiteSpace) === 0 && whiteSpace;
   }
-  private get ifStatement() {
+
+  private get ifStatement(): string | false {
     if (this.doesNotContain(ifStatement_Re)) return false;
     let res = this.input.match(ifStatement_Re)[0];
     return this.input.indexOf(res) === 0 && res;
