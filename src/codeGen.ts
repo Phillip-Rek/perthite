@@ -1,4 +1,4 @@
-import { Parser, astTagNode } from "./parser";
+import { Parser, astTagNode, astNode } from "./parser";
 import { Lexer } from "./lexer";
 import * as fs from "fs";
 
