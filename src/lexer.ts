@@ -177,10 +177,17 @@ export class Lexer {
           });
         }
         this.consume(this.whiteSpace);
-      } else if (this.input[0] === "\n") {
+      }
+      else if (this.input[0] === "\n") {
+        this.tokens.push({
+          type: "Text",
+          val: `\n`,
+          pos: { ...this.pos },
+        });
         this.newLIne();
         this.consume("\n");
-      } else if (this.dynamicData) {
+      }
+      else if (this.dynamicData) {
         this.tokens.push({
           type: "DynamicData",
           val: this.dynamicData,
