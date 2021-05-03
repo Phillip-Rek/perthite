@@ -32,7 +32,7 @@ export class Lexer {
   private pos: Pos = { col: 1, row: 1 };
   private cursor: number;
   private tokens: Array<Token> = [];
-  private currentStatus: string;
+  private currentStatus: string = "innerHTML";
   constructor(private input: string, private file: string) {
     this.cursor = 0;
     for (; ;) {
