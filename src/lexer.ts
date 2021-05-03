@@ -89,8 +89,10 @@ export class Lexer {
         });
         this.consume(this.link);
       } else if (this.elseIfStatement) {
+        let type = this.currentStatus === "attributes" ?
+          "ElseIfStatement" : "DynamicData";
         this.tokens.push({
-          type: "ElseIfStatement",
+          type,
           val: this.elseIfStatement,
           pos: { ...this.pos },
         });
