@@ -4,12 +4,12 @@ import * as fs from "fs";
 
 let mode = process.env.NODE_ENV || "development";
 
-declare type AstNode = Partial<ASTElement>;
 
 let templateBuffer: string = "let template = ``\n";
-let buffer = "";
+let buffer = `let template="";\n`;
 let globalVars = "";
 let status;
+let serverRunsForTheFirstTime = true;
 class GenerateCode {
   constructor(ast: AstNode, data: any, file: string) {
     this.node = ast;
