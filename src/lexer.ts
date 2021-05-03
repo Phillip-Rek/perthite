@@ -37,42 +37,13 @@ export class Lexer {
     this.cursor = 0;
     for (; ;) {
       if (this.openTagStart) {
-        if (this.openTagStart === "<script") {
-          let jsCodeEnd = this.input.indexOf("</script>", this.cursor);
-          let jsCode = "\n" + this.input.slice(this.cursor, jsCodeEnd + 9);
-          this.tokens.push({
-            type: "JsCode",
-            val: jsCode,
-            pos: Object.freeze({ ...this.pos }),
-          });
-          this.consume(jsCode);
-        } else if (this.metaTag) {
-          //in case its a meta tag
-          //parse it as text,  I dont't s
-          //ee the need of creating a
-          //separate token for this
-          let metaTagToken = this.metaTag;
-          this.consume(this.metaTag);
-
-          while (this.whiteSpace || this.attribute) {
-            let tok = this.whiteSpace || this.attribute || "";
-            this.consume(tok);
-            metaTagToken += tok;
-          }
-          this.tokens.push({
-            type: "MetaTag",
-            val: metaTagToken + ">",
-            pos: Object.freeze({ ...this.pos }),
-          });
-        } else {
-          this.tokens.push({
-            type: "OpenTagStart",
-            val: this.openTagStart,
-            pos: Object.freeze({ ...this.pos }),
-          });
-          this.currentStatus = "attributes";
-          this.consume(this.openTagStart);
-        }
+        this.tokens.push({
+          type: "OpenTagStart",
+          val: this.openTagStart,
+          pos: { ...this.pos },
+        });
+        this.consume(this.openTagStart);
+        this.currentStatus = "attributes";
       } else if (this.dynamicAttr) {
         this.tokens.push({
           type: "DynamicAttribute",
