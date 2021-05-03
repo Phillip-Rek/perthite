@@ -181,16 +181,6 @@ export class Lexer {
         this.newLIne();
         this.consume("\n");
       } else if (this.dynamicData) {
-        let type: string;
-        if (
-          this.dynamicData.search(elseStatement_Re_2) > -1 &&
-          this.currentStatus === "attributes"
-        ) {
-          type = "IfStatement";
-        } else {
-          type = "DynamicData";
-        }
-
         this.tokens.push({
           type: "DynamicData",
           val: this.dynamicData,
