@@ -160,13 +160,13 @@ export class Lexer {
         });
         this.consume(this.selfClosingTag);
       } else if (this.openTagEnd) {
-        this.currentStatus = "innerHTML";
         this.tokens.push({
           type: "OpenTagEnd",
           val: this.openTagEnd,
           pos: { ...this.pos },
         });
         this.consume(this.openTagEnd);
+        this.currentStatus = "innerHTML";
       } else if (this.whiteSpace) {
         this.tokens.push({
           type: "Text",
