@@ -213,7 +213,32 @@ export class Lexer {
           pos: { ...this.pos },
         });
         this.consume(this.closeTag);
-      } else if (this.setDocType) {
+      }
+      else if (this.text) {
+        let type = (this.currentStatus === "innerHTML" ? "InnerHTML" : "Attribute");
+        if (type === "Attribute" && this.text.search(attribute_Re) === -1) {
+          let error = new Error("");
+          error.name = "Attribute Error";
+          error.message = "Attribute was not assigned to a value. " +
+            "An attribute need to be assigned to a value " +
+            "like this attributeName='attributeValue' " +
+            ", at line " + this.pos.row + " column " + this.pos.col +
+            ", " + this.text + "...";
+          throw error;
+        }
+        /*If the is a line end we stop lexing Text*/
+        let text = this.text;
+        if (this.text.search(`\n`) > -1) {
+          text = this.text.substring(0, this.text.search(`\n`));
+        }
+        this.tokens.push({
+          type: type,
+          val: text,
+          pos: { ...this.pos },
+        });
+        this.consume(text);
+      }
+      else if (this.setDocType) {
         this.tokens.push({
           type: "DocType",
           val: this.setDocType,
@@ -239,22 +264,27 @@ export class Lexer {
       }
     }
   }
+
   private next() {
     this.pos.col++;
     this.cursor++;
     this.input = this.input.substring(1);
   }
+
   private consume(lexeme: string) {
     this.pos.col += lexeme.length;
     this.input = this.input.substring(lexeme.length);
   }
+
   private newLIne() {
     this.pos.row++;
     this.pos.col = -1;
   }
+
   private get eof() {
     return this.input[this.cursor] === undefined;
   }
+
   private get openTagStart() {
     if (this.doesNotContain(openTagStart_Re)) return false;
     let opTag = this.input.match(openTagStart_Re)[0];
