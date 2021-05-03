@@ -22,9 +22,9 @@ const css_Re = /style=["'][a-z\-\;0-9\: ]+['"]/i;
 const link_Re = /href=["'][a-z\-\;0-9\://. ]+['"]/i;
 const dynamicData_Re = /{{[ ]*[a-z0-9_.$\[\]\(\)\+"'\-_, ]+[ ]*}}/i;
 const closeTag_Re = /<\/[-_;:&%$#@+=*\w]+>/i;
-const javascriptSrc_Reg = /<script>[ \w"'=\(\)\n\t!&^%$#@\-:_<>+\/,.\?\[\]><?;\\]+<\/script>/i;
 const setDocType_Reg = `<!DOCTYPE html>`;
 const metaTag_Reg = /<meta/i;
+const scriptTag_Re = "<script";
 
 export class Lexer {
   private pos: Pos = { col: 1, row: 1 };
