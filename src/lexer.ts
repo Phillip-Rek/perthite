@@ -117,14 +117,6 @@ export class Lexer {
         });
         this.consume(this.ifStatement);
       }
-      else if (this.ifStatement2) {
-        this.tokens.push({
-          type: "IfStatement",
-          val: this.ifStatement2,
-          pos: { ...this.pos },
-        });
-        this.consume(this.ifStatement2);
-      }
       else if (this.forStatement2) {
         this.tokens.push({
           type: "ForStatement",
@@ -395,15 +387,4 @@ export class Lexer {
   }
 }
 
-var lexerInput;
-// fs.readFile("index.html", "utf8", (err, data)=>{
-//     if(err) throw err;
-//     else lexerInput = data;
-//     var tokens = new Lexer(lexerInput, "index.html").tokenize();
 
-//     console.log(tokens);
-
-//     fs.writeFile("ast.json", JSON.stringify(tokens), {}, (err)=>{
-//         if(err) throw err;
-//     })
-// })
