@@ -10,251 +10,167 @@ let buffer = `let template="";\n`;
 let globalVars = "";
 let status;
 let serverRunsForTheFirstTime = true;
-class GenerateCode {
-  constructor(ast: AstNode, data: any, file: string) {
-    this.node = ast;
-    this.data = data;
-    this.file = file;
-    switch (ast.type) {
+export class generator {
+  //initialize a program
+  constructor(private ast: astTagNode | astNode, private options: {}) {
+    switch (this.ast.type) {
       case "Program":
-        this.initProgram(this.node);
-        break;
-      case "HtmlElement":
-        this.visitHTMLElement(this.node);
-        break;
-      case "DynamicData":
-        this.visitDynamicData(this.node);
-        break;
-      case "Text":
-        this.visitText(this.node);
-        break;
-      default:
-        buffer += "template +=" + this.node.val + ";\n";
-        break;
+        this.init(this.ast);
     }
   }
-  private node: AstNode;
-  private data: any;
-  private file;
-  public compile() {
-    return buffer;
+
+  private init(ast: astTagNode | astNode) {
+    buffer += `\n/*START-OF-BLOBAL-VARIALE-DECLARATION-55522555*/\n`;
+    for (const key in this.options) {
+      if (this.options.hasOwnProperty(key)) {
+        let value = this.options[key];
+        switch (typeof value) {
+          case "object":
+            value = JSON.stringify(value);
+            break;
+          case "number":
+          case "boolean":
+          case "function":
+            value = value;
+            break;
+          default:
+            value = `\`${value}\``;
+            break;
+        }
+        if (serverRunsForTheFirstTime) {
+          buffer += `let ${key} = ${value};\n`;
+          serverRunsForTheFirstTime = false;
+        }
+        else
+          buffer += `${key} = ${value};\n`;
+      }
+    }
+
+    /*mark the end of global variables declarations*/
+    buffer += `\n/*END-OF-BLOBAL-VARIALE-DECLARATION-55522555*/\n`
+
+    this.visitChildren(ast);
   }
-  private initProgram(node: AstNode) {
-    buffer = templateBuffer;
-    //declare local variables
-    let data = Object.entries(this.data);
-    for (const item of data) {
-      const identifier = item[0];
-      let expression = item[1];
-      switch (typeof expression) {
-        case "object":
-          expression = JSON.stringify(expression);
+
+  private visitChildren(node: Partial<astTagNode>) {
+    let children = node.children;
+    for (let i = 0; i < children.length; i++) {
+      const child = children[i];
+      switch (child.type) {
+        case "Tag":
+          this.visitTag(child);
           break;
-        case "number":
-        case "boolean":
-        case "function":
-          expression = expression;
+        case "SelfClosingTag":
+          this.visitSelfClosingTag(child);
+          break;
+        case "Text":
+          this.visitText(child);
+          break;
+        case "JsCode":
+          this.visitJsCode(child);
+          break;
+        case "InnerHTML":
+          this.visitInnerHTML(child);
+          break;
+        case "DynamicData":
+          this.visitDynamicData(child);
+          break;
+        case "DocType":
+          this.visitDocType(child);
           break;
         default:
-          expression = `\`${expression}\``;
-          break;
-      }
-      if (!status) {
-        globalVars += `let ${identifier} = ${expression};\n`;
-        buffer += `let ${identifier} = ${expression};\n`;
-      } else {
-        globalVars += `${identifier} = ${expression};\n`;
-        buffer += `${identifier} = ${expression};\n`;
+          throw new Error("Unknown token type, " + child.type);
       }
     }
-    status = true;
+  }
+  public get byteCode() { return buffer; }
+
+  private visitTag(node: Partial<astTagNode>) {
+    if (node.ifStatement) {
+      this.visitIfStatement(node.ifStatement);
+      buffer += `template += "<${node.name}";\n`;
+      this.visitAttributes(node);
+      buffer += `template += ">";\n`;
+
+      /*
+          if its selfclosing tag then, 
+          we stop here since it does not have 
+          children of forstatement 
+      */
+      if (node.type === "SelfClosingTag") return;
+
+      if (node.forStatement) {
+        this.visitForStatement(node);
+      } else {
+        this.visitChildren(node);
+      }
+      buffer += `template += "</${node.name}>";\n`;
+      buffer += "}\n"
+    } else {
+      buffer += `template += "<${node.name}";\n`;
+      this.visitAttributes(node);
+      buffer += `template += ">";\n`;
+
+      /*
+          if its selfclosing tag then, 
+          we stop here since it does not have 
+          children of forstatement 
+      */
+
+      if (node.type === "SelfClosingTag") return;
+
+      if (node.forStatement) {
+        this.visitForStatement(node);
+      } else {
+        this.visitChildren(node);
+      }
+      buffer += `template += "</${node.name}>";\n`;
+    }
+  }
+
+  private visitDocType(node: astNode) {
+    buffer += `template += "${node.value}";\n`;
+  }
+  private visitForStatement(node: Partial<astTagNode>) {
+    let forStatementExpression = node.forStatement.slice(2, -2).trim();
+
+    buffer += `${forStatementExpression}{\n`;
     this.visitChildren(node);
+    buffer += `}\n`;
   }
-  private visitChildren(node: AstNode) {
-    let children = node.children;
-    let typ = node.name && node.name === "script" && "Text";
-
-    for (let child of children) {
-      child.type = typ ? typ : child.type;
-      new GenerateCode(child, this.data, this.file);
-    }
+  private visitIfStatement(ifStatement: string) {
+    let expression = ifStatement.substring(2, ifStatement.length - 2).trim();
+    buffer += expression + `{\n`;
   }
-  private blockStatementsStack = 0;
-  private visitHTMLElement(node: AstNode) {
-    let ifStatement = this.visitIfStatement(node);
-    if (ifStatement) return;
-    this.visitOpenTag(node);
-    this.vivitAttributes(node);
-    this.visitEvents(node);
 
-    if (node.isSelfClosing)
-      return (buffer = buffer.concat('template += "/>";\n'));
-
-    //this.visitForStatement(node)
-    this.visitForStatement2(node);
-
-    //if an element has a forStatement, then a forStatement
-    //will render it
-    if (!node.ForStatement) {
-      buffer = buffer.concat('template += ">";\n');
-      this.visitChildren(node);
-    }
-
-    buffer = buffer.concat("template += `</" + node.name + ">`;\n");
+  private visitSelfClosingTag(node: Partial<astTagNode>) {
+    this.visitTag(node);
   }
-  private visitOpenTag(node: AstNode) {
-    buffer = buffer.concat("template += `<" + node.name + "`;\n");
-  }
-  private vivitAttributes(node: AstNode) {
-    let identifier = /\w={{[ ]*[a-z0-9._\[\]]+[ ]*}}/i;
-    for (const attr of node.attributes) {
-      if (attr.search(identifier) > -1) {
-        const attrVal = attr.substring(attr.indexOf("=") + 1).trim();
-        const attrKey = attr.substring(0, attr.indexOf("="));
-        buffer = buffer.concat(`template += \` ${attrKey}=\\"\`;\n`);
 
-        this.visitDynamicData({
-          type: "DynamicData",
-          val: attrVal,
-          line: node.line,
-          col: node.col,
-        });
-
-        buffer = buffer.concat("template += '\"';\n");
-      } else {
-        buffer = buffer.concat(`template += \` ${attr}\`;\n`);
-      }
-    }
-  }
-  private visitEvents(node: AstNode) {
-    node.events.forEach((ev) => {
-      // buffer = buffer.concat(` ${ev.val}`)
-    });
-  }
-  private visitIfStatement(node: AstNode) {
-    if (!node.ifStatement) return;
-    let statement = node.ifStatement.val;
-    let statementForTest = statement.slice(2, -2).trim();
-    if (statement.search(/{{[ ]*else if\(/) === 0) {
-      let start = statement.indexOf("else if");
-      let end = statement.lastIndexOf(")") + 1;
-      statement = statement.slice(start, end);
-      statementForTest = "if(false){}" + statement;
-    } else if (statement.search(/{{[ ]*else[ ]*}}/) === 0) {
-      statement = statement.slice(2, -2).trim();
-      statementForTest = "if(false){}" + statement;
-    } else {
-      let start = statement.indexOf("if");
-      let end = statement.lastIndexOf(")") + 1;
-      statement = statement.slice(start, end);
-      statementForTest = statement;
-    }
-    //we know that node.locals contains identifiers
-    //of all declared variables so we redeclare them
-    //to to able to handle errors
-    let locals = "";
-    for (const local of node.locals) {
-      if (globalVars.search(new RegExp(`let ${local}`)) === -1) {
-        locals += local + ";\n";
-      }
-    }
-    if (mode === "development") {
-      statementForTest = globalVars + locals + statementForTest;
-      try {
-        new Function(statementForTest + "{}")();
-      } catch (e) {
-        console.error(
-          e +
-          " at line " +
-          node.ifStatement.line +
-          ", col " +
-          node.ifStatement.col +
-          " " +
-          ", file " +
-          this.file +
-          ", src: " +
-          node.ifStatement.val
-        );
-      }
-    }
-
-    buffer += statement + "{\n";
-    //remove ifStatement to avoid recursion
-    node.ifStatement = null;
-    this.visitHTMLElement(node);
-    buffer += "}\n";
-
-    return true;
-  }
-  private visitForStatement2(node: AstNode) {
-    if (!node.ForStatement) return;
-    //end an open-tag-start
-    buffer += `template +=\`>\`\n`;
-    let statement = node.ForStatement.val;
-    let statementForTest;
-    if (statement.search(forEach_Re) > -1) {
-      statement = statement.slice(2, -2).trim();
-      statement = statement.slice(0, statement.lastIndexOf("=>"));
-      buffer += statement + "=>{\n";
-      this.visitChildren(node);
-      buffer += "\n})\n";
-      statementForTest = globalVars + "\n" + statement + "=>{})";
-    } else {
-      statement = statement.slice(2, -2).trim();
-      buffer += statement + "{\n";
-      this.visitChildren(node);
-      buffer += "}\n";
-      statementForTest = globalVars + "\n" + statement + "{}";
-    }
-
-    if (mode === "development") {
-      try {
-        new Function(statementForTest)();
-      } catch (e) {
-        console.error(
-          e +
-          " at line " +
-          node.ForStatement.line +
-          " col " +
-          node.ForStatement.col +
-          " " +
-          node.ForStatement.val
-        );
-      }
+  private visitAttributes(node: Partial<astTagNode>) {
+    let attributes = node.attributes;
+    for (let i = 0; i < attributes.length; i++) {
+      const attr = attributes[i];
+      buffer += `template += \` ${attr}\`;\n`;
     }
   }
 
-  private visitText(node: AstNode) {
-    buffer += "template += `" + node.val + "`;\n";
-  }
-  private visitDynamicData(node: AstNode) {
-    let val = node.val.slice(2, -2).trim();
-
-    //get a variable from expression like users[0]
-    //let variable = this.extractLocalVariable(val)
-
-    //check if a variable was declared
-    // if (buffer.search("let " + variable) === -1) {
-    //     this.refErr(node)
-    // }
-
-    buffer = buffer.concat("template += " + val + ";\n");
+  private visitText(node: astNode) {
+    buffer += `template += \`${node.value}\`;\n`;
   }
 
-  private refErr(node: AstNode) {
-    let msg =
-      node.val + " is not defined at line : " + node.line + " col: " + node.col;
-    throw new ReferenceError(msg);
+  private visitJsCode(node: astNode) {
+    buffer += `template += \`${node.value}\`;\n`;
   }
-  private extractLocalVariable = (expression: string) => {
-    let variable = "";
-    for (let i = 0; i < expression.length; i++) {
-      let char = expression[i];
-      if (char === "." || char === "[" || char === "(") break;
-      variable += char;
-    }
-    return variable;
-  };
+
+  private visitInnerHTML(node: astNode) {
+    buffer += `template += \`${node.value}\`;\n`;
+  }
+
+  private visitDynamicData(node: astNode) {
+    let val = node.value.slice(2, -2)
+    buffer += `template += ${val};\n`;
+  }
 }
 
 export function render(tmplateSrsCode: string, file: string, data: {}) {
