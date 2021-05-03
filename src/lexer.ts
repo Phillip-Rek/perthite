@@ -71,91 +71,91 @@ export class Lexer {
         this.tokens.push({
           type: "DynamicAttribute",
           val: this.dynamicAttr,
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
         this.consume(this.dynamicAttr);
       } else if (this.css) {
         this.tokens.push({
           type: "CSS",
           val: this.css,
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
         this.consume(this.css);
       } else if (this.link) {
         this.tokens.push({
           type: "Attribute",
           val: this.link,
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
         this.consume(this.link);
       } else if (this.elseIfStatement) {
         this.tokens.push({
           type: "ElseIfStatement",
           val: this.elseIfStatement,
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
         this.consume(this.elseIfStatement);
       } else if (this.elseStatement) {
         this.tokens.push({
           type: "ElseStatement",
           val: this.elseStatement,
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
         this.consume(this.elseStatement);
       } else if (this.ifStatement) {
         this.tokens.push({
           type: "IfStatement",
           val: this.ifStatement,
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
         this.consume(this.ifStatement);
       } else if (this.ifStatement2) {
         this.tokens.push({
           type: "IfStatement",
           val: this.ifStatement2,
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
         this.consume(this.ifStatement2);
       } else if (this.forStatement2) {
         this.tokens.push({
           type: "ForStatement",
           val: this.forStatement2,
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
         this.consume(this.forStatement2);
       } else if (this.forStatement) {
         this.tokens.push({
           type: "ForStatement",
           val: this.forStatement,
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
         this.consume(this.forStatement);
       } else if (this.forEach) {
         this.tokens.push({
           type: "ForStatement",
           val: this.forEach,
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
         this.consume(this.forEach);
       } else if (this.on) {
         this.tokens.push({
           type: "Event",
           val: this.on,
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
         this.consume(this.on);
       } else if (this.attribute) {
         this.tokens.push({
           type: "Attribute",
           val: this.attribute,
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
         this.consume(this.attribute);
       } else if (this.selfClosingTag) {
         this.tokens.push({
           type: "SelfClosingTag",
           val: this.selfClosingTag,
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
         this.consume(this.selfClosingTag);
       } else if (this.openTagEnd) {
@@ -163,7 +163,7 @@ export class Lexer {
         this.tokens.push({
           type: "OpenTagEnd",
           val: this.openTagEnd,
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
         this.consume(this.openTagEnd);
       } else if (this.whiteSpace) {
@@ -172,7 +172,7 @@ export class Lexer {
           this.tokens.push({
             type: "Text",
             val: this.whiteSpace,
-            pos: Object.freeze({ ...this.pos }),
+            pos: { ...this.pos },
           });
         }
         this.consume(this.whiteSpace);
@@ -193,7 +193,7 @@ export class Lexer {
         this.tokens.push({
           type: "DynamicData",
           val: this.dynamicData,
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
 
         this.consume(this.dynamicData);
@@ -202,35 +202,35 @@ export class Lexer {
         this.tokens.push({
           type: "InnerHTML",
           val: this.text,
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
         this.consume(this.text);
       } else if (this.closeTag) {
         this.tokens.push({
           type: "CloseTag",
           val: this.closeTag,
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
         this.consume(this.closeTag);
       } else if (this.setDocType) {
         this.tokens.push({
           type: "DocType",
           val: this.setDocType,
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
         this.consume(this.setDocType);
       } else if (this.comparisonOp) {
         this.tokens.push({
           type: "Text",
           val: this.comparisonOp,
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
         this.consume(this.comparisonOp);
       } else if (this.eof) {
         this.tokens.push({
           type: "eof",
           val: "eof",
-          pos: Object.freeze({ ...this.pos }),
+          pos: { ...this.pos },
         });
         break;
       } else {
