@@ -1,43 +1,20 @@
 import { Lexer, Token } from "./lexer";
 let fs = require("fs");
 
-export declare type ASTElement = {
-  type: string;
-  name?: string;
-  val?: string;
-  replacement?: any;
-  parent?: Partial<ASTElement>;
-  closeTag?: Partial<ASTElement>;
-  events?: Array<Partial<ASTElement>>;
-  ForStatement?: Partial<ASTElement>;
-  rendered?: Boolean;
-  currentStatus?: string;
-  ifStatement?: simpleASTElement;
-  attributes?: Array<string>;
-  children?: Array<Partial<ASTElement>>;
-  nextSibling?: Partial<ASTElement>;
-  nextElementSibling?: Partial<ASTElement>;
-  previousElementSibling?: Partial<ASTElement>;
-  line: number;
-  col: number;
-  isSelfClosing?: boolean;
-  locals: Array<string>;
-  block: {
-    type: string;
-    nodes: Array<Partial<ASTElement>>;
-  };
-};
-export declare type Program = Pick<ASTElement, "type" | "children">;
-export declare type simpleASTElement = Required<
-  Pick<ASTElement, "type" | "val" | "line" | "col">
->;
-export declare type tagAST = Pick<
-  ASTElement,
-  "type" | "val" | "name" | "line" | "col" | "attributes" | "block" | "events"
->;
-export declare type htmlElement = Partial<ASTElement> & {
-  locals?: Array<string>;
-};
+export declare type astNode = {
+  type: string,
+  value: string,
+  line: number,
+  column: number
+}
+
+export interface astTagNode extends astNode {
+  name: string,
+  children: Array<astNode | astTagNode>,
+  attributes: string[],
+  forStatement: string,
+  ifStatement: string
+}
 export class Parser {
   constructor(tokens: Array<Token>) {
     for (let i = 0; i < tokens.length; i++) {
@@ -200,10 +177,10 @@ export class Parser {
     } else
       this.logError(
         token.val +
-          " does not have a corresponding open tag at line " +
-          token.pos.row +
-          " col " +
-          token.pos.col
+        " does not have a corresponding open tag at line " +
+        token.pos.row +
+        " col " +
+        token.pos.col
       );
     this.currentNode = this.unclosedNodes[this.unclosedNodes.length - 1];
   }
