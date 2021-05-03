@@ -260,16 +260,19 @@ export class Lexer {
     let opTag = this.input.match(openTagStart_Re)[0];
     return this.input.indexOf(opTag) === 0 && opTag;
   }
+
   private get setDocType(): string | false {
-    if (this.doesNotContain(setDocType_Reg)) return false;
-    let docType = this.input.match(setDocType_Reg)[0];
+    if (this.doesNotContain(setDocType_Re)) return false;
+    let docType = this.input.match(setDocType_Re)[0];
     return this.input.indexOf(docType) === 0 && docType;
   }
+
   private get attribute() {
     if (this.doesNotContain(attribute_Re)) return false;
     let attr = this.input.match(attribute_Re)[0];
     return this.input.indexOf(attr) === 0 && attr;
   }
+
   private get css(): string | false {
     if (this.doesNotContain(css_Re)) return false;
     let style = this.input.match(css_Re)[0];
