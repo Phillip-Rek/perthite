@@ -327,11 +327,7 @@ export class Lexer {
     return this.input.indexOf(res) === 0 && res;
   }
 
-  private get elseIfStatement() {
-    if (!this.doesNotContain(elseIfStatement_Re)) {
-      let res = this.input.match(elseIfStatement_Re)[0];
-      return this.input.indexOf(res) === 0 && res;
-    }
+  private get elseIfStatement(): string | false {
     if (!this.doesNotContain(elseIfStatement_Re)) {
       let res = this.input.match(elseIfStatement_Re)[0];
       return this.input.indexOf(res) === 0 && res;
