@@ -338,13 +338,13 @@ export class Lexer {
     }
     return false;
   }
-  private get elseStatement() {
+  private get elseStatement(): string | false {
     if (!this.doesNotContain(elseStatement_Re)) {
       let res = this.input.match(elseStatement_Re)[0];
       return this.input.indexOf(res) === 0 && res;
     }
-    if (this.input.search(elseStatement_Re_2) !== -1) {
-      let res = this.input.match(elseStatement_Re_2)[0];
+    if (this.input.search(elseStatement_Re) !== -1) {
+      let res = this.input.match(elseStatement_Re)[0];
       return this.input.indexOf(res) === 0 && res;
     }
     return false;
