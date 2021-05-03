@@ -18,7 +18,7 @@ export interface astTagNode extends astNode {
 }
 
 export class Parser {
-  private ast: (astTagNode & astNode) = {
+  ast: (astTagNode & astNode) = {
     type: "Program",
     value: "Program",
     name: "Program",

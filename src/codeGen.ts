@@ -12,7 +12,7 @@ let status;
 let serverRunsForTheFirstTime = true;
 export class GenerateCode {
   //initialize a program
-  constructor(private ast: astTagNode | astNode, private options: {}) {
+  constructor(private ast: astTagNode | astNode, private options: {}, srcFile: string) {
     switch (this.ast.type) {
       case "Program":
         this.init(this.ast);
@@ -178,8 +178,8 @@ export function render(tmplateSrsCode: string, file: string, data: {}) {
   //     tmplateSrsCode = fs.readFileSync(file, "utf8").toString()
   // }
   let tokens = new Lexer(tmplateSrsCode, "index.html").tokenize();
-  let AST = JSON.parse(JSON.stringify(new Parser(tokens, data).getAST()));
-  let template = new GenerateCode(AST, data, file).compile();
+  let AST = JSON.parse(JSON.stringify(new Parser(tokens, data).ast));
+  let template = new GenerateCode(AST, data, file).byteCode;
 
   //    fs.writeFileSync(__dirname + '/template.js', template, "utf8")
   let output;
@@ -209,40 +209,3 @@ export function engine(
     return callback(null, res);
   });
 }
-
-/*
------------------------------------------------------
------------------------------------------------------
-*/
-
-/*
-import { articles } from "./models.js";
-
-let lexerInput = null;
-
-fs.readFile("index.html", "utf8", (err, data) => {
-  if (err) throw err;
-  else lexerInput = data;
-
-  var tokens = new Lexer(lexerInput, "index.html").tokenize();
-
-  //console.log(tokens);
-
-  let ast = new Parser(tokens).getAST();
-
-  let output = new GenerateCode(
-    ast,
-    { articles, recentArticle: articles[0] },
-    "index.html"
-  ).compile();
-
-  output += "return template;";
-  console.log(new Function(output)());
-
-  fs.writeFile("output.html", new Function(output)(), {}, (err) => {
-    if (err) throw err;
-  });
-});
-
-
-*/
