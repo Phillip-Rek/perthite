@@ -107,8 +107,10 @@ export class Lexer {
         });
         this.consume(this.elseStatement);
       } else if (this.ifStatement) {
+        let type = this.currentStatus === "attributes" ?
+          "IfStatement" : "DynamicData";
         this.tokens.push({
-          type: "IfStatement",
+          type: type,
           val: this.ifStatement,
           pos: { ...this.pos },
         });
