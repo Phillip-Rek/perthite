@@ -168,14 +168,12 @@ export class Lexer {
         });
         this.consume(this.openTagEnd);
       } else if (this.whiteSpace) {
-        let lastToken = this.tokens[this.tokens.length - 1].type;
-        if (lastToken !== "CloseTag" && lastToken !== "SelfClosingTag") {
-          this.tokens.push({
-            type: "Text",
-            val: this.whiteSpace,
-            pos: { ...this.pos },
-          });
-        }
+        this.tokens.push({
+          type: "Text",
+          val: " ",
+          pos: { ...this.pos },
+        });
+
         this.consume(this.whiteSpace);
       }
       else if (this.input[0] === "\n") {
