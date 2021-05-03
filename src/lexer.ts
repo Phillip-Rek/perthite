@@ -385,6 +385,14 @@ export class Lexer {
   private doesNotContain(arg: RegExp | string) {
     return this.input.search(arg) === -1;
   }
+
+  /*NEW METHOD */
+
+  private get scriptTag(): string | false {
+    if (this.doesNotContain(scriptTag_Re)) return false;
+    let scriptTag = this.input.match(scriptTag_Re)[0];
+    return this.input.indexOf(scriptTag) === 0 && scriptTag;
+  }
 }
 
 
