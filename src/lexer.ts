@@ -106,7 +106,8 @@ export class Lexer {
           pos: { ...this.pos },
         });
         this.consume(this.elseStatement);
-      } else if (this.ifStatement) {
+      }
+      else if (this.ifStatement) {
         let type = this.currentStatus === "attributes" ?
           "IfStatement" : "DynamicData";
         this.tokens.push({
@@ -115,14 +116,16 @@ export class Lexer {
           pos: { ...this.pos },
         });
         this.consume(this.ifStatement);
-      } else if (this.ifStatement2) {
+      }
+      else if (this.ifStatement2) {
         this.tokens.push({
           type: "IfStatement",
           val: this.ifStatement2,
           pos: { ...this.pos },
         });
         this.consume(this.ifStatement2);
-      } else if (this.forStatement2) {
+      }
+      else if (this.forStatement2) {
         this.tokens.push({
           type: "ForStatement",
           val: this.forStatement2,
@@ -331,11 +334,7 @@ export class Lexer {
     let res = this.input.match(ifStatement_Re)[0];
     return this.input.indexOf(res) === 0 && res;
   }
-  private get ifStatement2() {
-    if (this.doesNotContain(ifStatement_Re_2)) return false;
-    let res = this.input.match(ifStatement_Re_2)[0];
-    return this.input.indexOf(res) === 0 && res;
-  }
+
   private get elseIfStatement() {
     if (!this.doesNotContain(elseIfStatement_Re)) {
       let res = this.input.match(elseIfStatement_Re)[0];
