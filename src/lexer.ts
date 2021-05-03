@@ -23,7 +23,7 @@ const link_Re = /href=["'][a-z\-\;0-9\://. ]+['"]/i;
 const dynamicData_Re = /{{[ ]*[a-z0-9_.$\[\]\(\)\+"'\-_, ]+[ ]*}}/i;
 const closeTag_Re = /<\/[-_;:&%$#@+=*\w]+>/i;
 const setDocType_Reg = `<!DOCTYPE html>`;
-const metaTag_Reg = /<meta/i;
+const selfClosingTag_Re = /^(<area|<base|<br|<col|<embed|<hr|<img|<input|<link|<meta|<param|<source|<track|<wbr|<command|<keygen|<menuitem)/;
 const scriptTag_Re = "<script";
 
 export class Lexer {
