@@ -349,21 +349,11 @@ export class Lexer {
     }
     return false;
   }
-  private get forStatement() {
+  private get forStatement(): string | false {
     if (this.doesNotContain(forStatement_Re)) return false;
     let forStatement = this.input.match(forStatement_Re)[0];
     return this.input.indexOf(forStatement) === 0 && forStatement;
   }
-  private get forStatement2() {
-    if (this.doesNotContain(forStatement_Re_2)) return false;
-    let forStatement = this.input.match(forStatement_Re_2)[0];
-    return this.input.indexOf(forStatement) === 0 && forStatement;
-  }
-  // private get lexJSCode() {
-  //     if (this.doesNotContain(javascriptSrc_Reg)) return false;
-  //     let forStatement = this.input.match(forStatement_Re)[0];
-  //     return this.input.indexOf(forStatement) === 0 && forStatement;
-  // }
   private get forEach() {
     if (this.doesNotContain(forEach_Re)) return false;
     let foreach = this.input.match(forEach_Re)[0];
