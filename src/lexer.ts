@@ -117,14 +117,7 @@ export class Lexer {
         });
         this.consume(this.ifStatement);
       }
-      else if (this.forStatement2) {
-        this.tokens.push({
-          type: "ForStatement",
-          val: this.forStatement2,
-          pos: { ...this.pos },
-        });
-        this.consume(this.forStatement2);
-      } else if (this.forStatement) {
+      else if (this.forStatement) {
         this.tokens.push({
           type: "ForStatement",
           val: this.forStatement,
