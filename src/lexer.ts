@@ -118,8 +118,10 @@ export class Lexer {
         this.consume(this.ifStatement);
       }
       else if (this.forStatement) {
+        let type = this.currentStatus === "attributes" ?
+          "ForStatement" : "DynamicData";
         this.tokens.push({
-          type: "ForStatement",
+          type: type,
           val: this.forStatement,
           pos: { ...this.pos },
         });
