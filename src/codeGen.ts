@@ -1,5 +1,5 @@
-import { Parser, ASTElement } from "./parser";
-import { Lexer, forEach_Re } from "./lexer";
+import { Parser } from "./parser";
+import { Lexer } from "./lexer";
 import * as fs from "fs";
 
 let mode = process.env.NODE_ENV || "development";
@@ -165,15 +165,15 @@ class GenerateCode {
       } catch (e) {
         console.error(
           e +
-            " at line " +
-            node.ifStatement.line +
-            ", col " +
-            node.ifStatement.col +
-            " " +
-            ", file " +
-            this.file +
-            ", src: " +
-            node.ifStatement.val
+          " at line " +
+          node.ifStatement.line +
+          ", col " +
+          node.ifStatement.col +
+          " " +
+          ", file " +
+          this.file +
+          ", src: " +
+          node.ifStatement.val
         );
       }
     }
@@ -213,12 +213,12 @@ class GenerateCode {
       } catch (e) {
         console.error(
           e +
-            " at line " +
-            node.ForStatement.line +
-            " col " +
-            node.ForStatement.col +
-            " " +
-            node.ForStatement.val
+          " at line " +
+          node.ForStatement.line +
+          " col " +
+          node.ForStatement.col +
+          " " +
+          node.ForStatement.val
         );
       }
     }
