@@ -10,7 +10,7 @@ let buffer = `let template="";\n`;
 let globalVars = "";
 let status;
 let serverRunsForTheFirstTime = true;
-export class GenerateCode {
+class GenerateCode {
   //initialize a program
   constructor(private ast: astTagNode | astNode, private options: {}, srcFile: string) {
     switch (this.ast.type) {
@@ -95,7 +95,7 @@ export class GenerateCode {
       /*
           if its selfclosing tag then, 
           we stop here since it does not have 
-          children of forstatement 
+          children or forstatement 
       */
       if (node.type === "SelfClosingTag") return;
 
