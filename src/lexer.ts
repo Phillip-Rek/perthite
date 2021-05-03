@@ -280,7 +280,8 @@ export class Lexer {
     let link = this.input.match(link_Re)[0];
     return this.input.indexOf(link) === 0 && link;
   }
-  private get dynamicAttr() {
+
+  private get dynamicAttr(): string | false {
     if (this.doesNotContain(dynamicAttr_Re)) return false;
     let attr = this.input.match(dynamicAttr_Re)[0];
     return this.input.indexOf(attr) === 0 && attr;
