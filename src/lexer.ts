@@ -207,6 +207,16 @@ export class Lexer {
         });
         this.consume(this.closeTag);
       }
+      else if (this.commentStart) {
+        let commentEnd = this.input.indexOf("-->") + 3;
+        let fullComment = this.input.substring(0, commentEnd);
+        this.tokens.push({
+          type: "Comment",
+          val: fullComment,
+          pos: { ...this.pos },
+        });
+        this.consume(fullComment);
+      }
       else if (this.text) {
         let type = (this.currentStatus === "innerHTML" ? "InnerHTML" : "Attribute");
         if (type === "Attribute" && this.text.search(attribute_Re) === -1) {
