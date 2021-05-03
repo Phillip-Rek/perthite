@@ -8,6 +8,7 @@ export declare type Token = {
   val: string;
   pos: Pos;
 };
+const compOp_Re = /[<>]/;
 const ifStatement_Re = /{{[ ]*if\([ \w.$\[\]"'=<>+\-,&\(\)\|]+\)[ ]*}}/;
 const elseIfStatement_Re = /{{[ ]*else if\([ \w.$\[\]"'=<>+\-,'"&\(\)\|]+\)[ ]*}}/;
 const elseStatement_Re = /{{[ ]*else[ ]*}}/;
