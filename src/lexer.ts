@@ -1,5 +1,3 @@
-let fs = require("fs");
-
 export declare type Pos = {
   col: number;
   row: number;
