@@ -13,6 +13,8 @@ let serverRunsForTheFirstTime = true;
 class GenerateCode {
   //initialize a program
   constructor(private ast: astTagNode | astNode, private options: {}, srcFile: string) {
+    buffer = `let template="";\n`;
+
     switch (this.ast.type) {
       case "Program":
         this.init(this.ast);
@@ -178,20 +180,23 @@ export function render(tmplateSrsCode: string, file: string, data: {}) {
   let AST = JSON.parse(JSON.stringify(new Parser(tokens, data).ast));
   let template = new GenerateCode(AST, data, file).byteCode;
 
-  let output;
-  if (mode === "development") {
-    let output = new Function(template + "return template;\n")();
-    return output;
-  } else {
-    try {
-      output = new Function(template + "return template;\n")();
-      return output;
-    } catch (e) {
-      console.error("failed to compile: " + e);
-      return output;
-      //return "<h1 style='color: red'>failed to compile</h1>"
-    }
-  }
+  let output = new Function(template + "return template;\n")();
+  return output;
+
+  // let output;
+  // if (mode === "development") {
+  //   let output = new Function(template + "return template;\n")();
+  //   return output;
+  // } else {
+  //   try {
+  //     output = new Function(template + "return template;\n")();
+  //     return output;
+  //   } catch (e) {
+  //     console.error("failed to compile: " + e);
+  //     return output;
+  //     //return "<h1 style='color: red'>failed to compile</h1>"
+  //   }
+  // }
 }
 
 export function engine(
