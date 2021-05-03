@@ -152,13 +152,6 @@ export class Lexer {
           pos: { ...this.pos },
         });
         this.consume(this.attribute);
-      } else if (this.selfClosingTag) {
-        this.tokens.push({
-          type: "SelfClosingTag",
-          val: this.selfClosingTag,
-          pos: { ...this.pos },
-        });
-        this.consume(this.selfClosingTag);
       } else if (this.openTagEnd) {
         this.tokens.push({
           type: "OpenTagEnd",
