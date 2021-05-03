@@ -36,7 +36,22 @@ export class Lexer {
   constructor(private input: string, private file: string) {
     this.cursor = 0;
     for (; ;) {
-      if (this.selfClosingTag) {
+      if (this.scriptTag) {
+        /*Find end of JavaScript code */
+        let jsCodeEnd = this.input.indexOf("</script>");
+        let jsCode = this.input.slice(0, jsCodeEnd + 9);
+        /*update the position, by counting line-ends and columns */
+        this.pos.row += jsCode.split("\n").length - 1;
+        this.pos.col = 0;
+
+        this.tokens.push({
+          type: "JsCode",
+          val: jsCode.split("`").join("\`"),
+          pos: { ...this.pos },
+        });
+        this.consume(jsCode);
+      }
+      else if (this.selfClosingTag) {
         this.tokens.push({
           type: "SelfClosingTag",
           val: this.selfClosingTag,
