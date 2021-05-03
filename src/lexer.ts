@@ -124,28 +124,34 @@ export class Lexer {
           pos: { ...this.pos },
         });
         this.consume(this.forStatement);
-      } else if (this.forEach) {
+      }
+      else if (this.forEach) {
         this.tokens.push({
           type: "ForStatement",
           val: this.forEach,
           pos: { ...this.pos },
         });
         this.consume(this.forEach);
-      } else if (this.on) {
+      }
+      else if (this.on) {
+        let type = this.currentStatus === "attributes" ?
+          "Event" : "DynamicData";
         this.tokens.push({
-          type: "Event",
+          type: type,
           val: this.on,
           pos: { ...this.pos },
         });
         this.consume(this.on);
-      } else if (this.attribute) {
+      }
+      else if (this.attribute) {
         this.tokens.push({
           type: "Attribute",
           val: this.attribute,
           pos: { ...this.pos },
         });
         this.consume(this.attribute);
-      } else if (this.openTagEnd) {
+      }
+      else if (this.openTagEnd) {
         this.tokens.push({
           type: "OpenTagEnd",
           val: this.openTagEnd,
@@ -153,7 +159,8 @@ export class Lexer {
         });
         this.consume(this.openTagEnd);
         this.currentStatus = "innerHTML";
-      } else if (this.whiteSpace) {
+      }
+      else if (this.whiteSpace) {
         this.tokens.push({
           type: "Text",
           val: " ",
