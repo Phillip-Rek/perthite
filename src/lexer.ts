@@ -36,7 +36,15 @@ export class Lexer {
   constructor(private input: string, private file: string) {
     this.cursor = 0;
     for (; ;) {
-      if (this.openTagStart) {
+      if (this.selfClosingTag) {
+        this.tokens.push({
+          type: "SelfClosingTag",
+          val: this.selfClosingTag,
+          pos: { ...this.pos },
+        });
+        this.consume(this.selfClosingTag);
+        this.currentStatus = "attributes";
+      } else if (this.openTagStart) {
         this.tokens.push({
           type: "OpenTagStart",
           val: this.openTagStart,
