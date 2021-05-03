@@ -285,11 +285,21 @@ export class Lexer {
     let attr = this.input.match(dynamicAttr_Re)[0];
     return this.input.indexOf(attr) === 0 && attr;
   }
-  private get openTagEnd() {
-    if (this.doesNotContain(">")) return false;
-    let tagENd = this.input.match(">")[0];
-    return this.input.indexOf(tagENd) === 0 && tagENd;
+
+  private get openTagEnd(): string | false {
+
+    if (
+      this.doesNotContain(/>/) ||
+      this.currentStatus === "innerHTML"
+    ) {
+      return false;
+    }
+    else {
+      let tagENd = this.input.match(/>/)[0];
+      return this.input.indexOf(tagENd) === 0 && tagENd;
+    }
   }
+
   public get selfClosingTag(): string | false {
     if (this.doesNotContain(selfClosingTag_Re)) return false;
     let tagENd = this.input.match(selfClosingTag_Re)[0];
