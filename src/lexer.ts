@@ -369,11 +369,6 @@ export class Lexer {
     let foreach = this.input.match(forEach_Re)[0];
     return this.input.indexOf(foreach) === 0 && foreach;
   }
-  private get metaTag() {
-    if (this.doesNotContain(metaTag_Reg)) return false;
-    let meta = this.input.match(metaTag_Reg)[0];
-    return this.input.indexOf(meta) === 0 && meta;
-  }
   private get on() {
     if (this.doesNotContain(on_Re)) return false;
     let on = this.input.match(on_Re)[0];
