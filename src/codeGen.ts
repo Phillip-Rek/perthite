@@ -174,14 +174,10 @@ export class GenerateCode {
 }
 
 export function render(tmplateSrsCode: string, file: string, data: {}) {
-  // if (!tmplateSrsCode) {
-  //     tmplateSrsCode = fs.readFileSync(file, "utf8").toString()
-  // }
   let tokens = new Lexer(tmplateSrsCode, "index.html").tokenize();
   let AST = JSON.parse(JSON.stringify(new Parser(tokens, data).ast));
   let template = new GenerateCode(AST, data, file).byteCode;
 
-  //    fs.writeFileSync(__dirname + '/template.js', template, "utf8")
   let output;
   if (mode === "development") {
     let output = new Function(template + "return template;\n")();
