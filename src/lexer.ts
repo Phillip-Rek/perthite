@@ -418,6 +418,12 @@ export class Lexer {
 
   /*NEW METHOD */
 
+  private get commentStart(): string | false {
+    if (this.doesNotContain(commentStart_Re)) return false;
+    let commentStart = this.input.match(commentStart_Re)[0];
+    return this.input.indexOf(commentStart) === 0 && commentStart;
+  }
+
   private get scriptTag(): string | false {
     if (this.doesNotContain(scriptTag_Re)) return false;
     let scriptTag = this.input.match(scriptTag_Re)[0];
