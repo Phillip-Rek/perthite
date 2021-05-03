@@ -10,7 +10,7 @@ let buffer = `let template="";\n`;
 let globalVars = "";
 let status;
 let serverRunsForTheFirstTime = true;
-export class generator {
+export class GenerateCode {
   //initialize a program
   constructor(private ast: astTagNode | astNode, private options: {}) {
     switch (this.ast.type) {
@@ -178,7 +178,7 @@ export function render(tmplateSrsCode: string, file: string, data: {}) {
   //     tmplateSrsCode = fs.readFileSync(file, "utf8").toString()
   // }
   let tokens = new Lexer(tmplateSrsCode, "index.html").tokenize();
-  let AST = JSON.parse(JSON.stringify(new Parser(tokens).getAST()));
+  let AST = JSON.parse(JSON.stringify(new Parser(tokens, data).getAST()));
   let template = new GenerateCode(AST, data, file).compile();
 
   //    fs.writeFileSync(__dirname + '/template.js', template, "utf8")
