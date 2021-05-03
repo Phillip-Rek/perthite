@@ -290,16 +290,18 @@ export class Lexer {
     let tagENd = this.input.match(">")[0];
     return this.input.indexOf(tagENd) === 0 && tagENd;
   }
-  public get selfClosingTag() {
-    if (this.doesNotContain("/>")) return false;
-    let tagENd = this.input.match("/>")[0];
+  public get selfClosingTag(): string | false {
+    if (this.doesNotContain(selfClosingTag_Re)) return false;
+    let tagENd = this.input.match(selfClosingTag_Re)[0];
     return this.input.indexOf(tagENd) === 0 && tagENd;
   }
-  private get dynamicData() {
+
+  private get dynamicData(): string | false {
     if (this.doesNotContain(dynamicData_Re)) return false;
     let identifier = this.input.match(dynamicData_Re)[0];
     return this.input.indexOf(identifier) === 0 && identifier;
   }
+
   private get comparisonOp(): string | false {
     if (this.doesNotContain(compOp_Re)) return false;
     let identifier = this.input.match(compOp_Re)[0];
