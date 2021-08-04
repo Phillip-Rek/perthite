@@ -6,271 +6,187 @@ var lexer_1 = require("./lexer");
 var fs = require("fs");
 var mode = process.env.NODE_ENV || "development";
 var templateBuffer = "let template = ``\n";
-var buffer = "";
+var buffer = "let template=\"\";\n";
 var globalVars = "";
 var status;
+var serverRunsForTheFirstTime = true;
 var GenerateCode = /** @class */ (function () {
-    function GenerateCode(ast, data, file) {
-        this.blockStatementsStack = 0;
-        this.extractLocalVariable = function (expression) {
-            var variable = "";
-            for (var i = 0; i < expression.length; i++) {
-                var char = expression[i];
-                if (char === "." || char === "[" || char === "(")
-                    break;
-                variable += char;
-            }
-            return variable;
-        };
-        this.node = ast;
-        this.data = data;
-        this.file = file;
-        switch (ast.type) {
+    //initialize a program
+    function GenerateCode(ast, options, srcFile) {
+        this.ast = ast;
+        this.options = options;
+        buffer = "let template=\"\";\n";
+        switch (this.ast.type) {
             case "Program":
-                this.initProgram(this.node);
-                break;
-            case "HtmlElement":
-                this.visitHTMLElement(this.node);
-                break;
-            case "DynamicData":
-                this.visitDynamicData(this.node);
-                break;
-            case "Text":
-                this.visitText(this.node);
-                break;
-            default:
-                buffer += "template +=" + this.node.val + ";\n";
-                break;
+                this.init(this.ast);
         }
     }
-    GenerateCode.prototype.compile = function () {
-        return buffer;
-    };
-    GenerateCode.prototype.initProgram = function (node) {
-        buffer = templateBuffer;
-        //declare local variables
-        var data = Object.entries(this.data);
-        for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
-            var item = data_1[_i];
-            var identifier = item[0];
-            var expression = item[1];
-            switch (typeof expression) {
-                case "object":
-                    expression = JSON.stringify(expression);
-                    break;
-                case "number":
-                case "boolean":
-                case "function":
-                    expression = expression;
-                    break;
-                default:
-                    expression = "`" + expression + "`";
-                    break;
-            }
-            if (!status) {
-                globalVars += "let " + identifier + " = " + expression + ";\n";
-                buffer += "let " + identifier + " = " + expression + ";\n";
-            }
-            else {
-                globalVars += identifier + " = " + expression + ";\n";
-                buffer += identifier + " = " + expression + ";\n";
+    GenerateCode.prototype.init = function (ast) {
+        buffer += "\n/*START-OF-BLOBAL-VARIALE-DECLARATION-55522555*/\n";
+        for (var key in this.options) {
+            if (this.options.hasOwnProperty(key)) {
+                var value = this.options[key];
+                switch (typeof value) {
+                    case "object":
+                        value = JSON.stringify(value);
+                        break;
+                    case "number":
+                    case "boolean":
+                    case "function":
+                        value = value;
+                        break;
+                    default:
+                        value = "`" + value + "`";
+                        break;
+                }
+                if (serverRunsForTheFirstTime) {
+                    buffer += "let " + key + " = " + value + ";\n";
+                    serverRunsForTheFirstTime = false;
+                }
+                else
+                    buffer += key + " = " + value + ";\n";
             }
         }
-        status = true;
-        this.visitChildren(node);
+        /*mark the end of global variables declarations*/
+        buffer += "\n/*END-OF-BLOBAL-VARIALE-DECLARATION-55522555*/\n";
+        this.visitChildren(ast);
     };
     GenerateCode.prototype.visitChildren = function (node) {
         var children = node.children;
-        var typ = node.name && node.name === "script" && "Text";
-        for (var _i = 0, children_1 = children; _i < children_1.length; _i++) {
-            var child = children_1[_i];
-            child.type = typ ? typ : child.type;
-            new GenerateCode(child, this.data, this.file);
+        for (var i = 0; i < children.length; i++) {
+            var child = children[i];
+            switch (child.type) {
+                case "Tag":
+                    this.visitTag(child);
+                    break;
+                case "SelfClosingTag":
+                    this.visitSelfClosingTag(child);
+                    break;
+                case "Text":
+                    this.visitText(child);
+                    break;
+                case "JsCode":
+                    this.visitJsCode(child);
+                    break;
+                case "InnerHTML":
+                    this.visitInnerHTML(child);
+                    break;
+                case "DynamicData":
+                    this.visitDynamicData(child);
+                    break;
+                case "DocType":
+                    this.visitDocType(child);
+                    break;
+                default:
+                    throw new Error("Unknown token type, " + child.type);
+            }
         }
     };
-    GenerateCode.prototype.visitHTMLElement = function (node) {
-        var ifStatement = this.visitIfStatement(node);
-        if (ifStatement)
-            return;
-        this.visitOpenTag(node);
-        this.vivitAttributes(node);
-        this.visitEvents(node);
-        if (node.isSelfClosing)
-            return (buffer = buffer.concat('template += "/>";\n'));
-        //this.visitForStatement(node)
-        this.visitForStatement2(node);
-        //if an element has a forStatement, then a forStatement
-        //will render it
-        if (!node.ForStatement) {
-            buffer = buffer.concat('template += ">";\n');
-            this.visitChildren(node);
-        }
-        buffer = buffer.concat("template += `</" + node.name + ">`;\n");
-    };
-    GenerateCode.prototype.visitOpenTag = function (node) {
-        buffer = buffer.concat("template += `<" + node.name + "`;\n");
-    };
-    GenerateCode.prototype.vivitAttributes = function (node) {
-        var identifier = /\w={{[ ]*[a-z0-9._\[\]]+[ ]*}}/i;
-        for (var _i = 0, _a = node.attributes; _i < _a.length; _i++) {
-            var attr = _a[_i];
-            if (attr.search(identifier) > -1) {
-                var attrVal = attr.substring(attr.indexOf("=") + 1).trim();
-                var attrKey = attr.substring(0, attr.indexOf("="));
-                buffer = buffer.concat("template += ` " + attrKey + "=\\\"`;\n");
-                this.visitDynamicData({
-                    type: "DynamicData",
-                    val: attrVal,
-                    line: node.line,
-                    col: node.col
-                });
-                buffer = buffer.concat("template += '\"';\n");
+    Object.defineProperty(GenerateCode.prototype, "byteCode", {
+        get: function () { return buffer; },
+        enumerable: false,
+        configurable: true
+    });
+    GenerateCode.prototype.visitTag = function (node) {
+        if (node.ifStatement) {
+            this.visitIfStatement(node.ifStatement);
+            buffer += "template += \"<" + node.name + "\";\n";
+            this.visitAttributes(node);
+            buffer += "template += \">\";\n";
+            /*
+                if its selfclosing tag then,
+                we stop here since it does not have
+                children or forstatement
+            */
+            if (node.type === "SelfClosingTag")
+                return;
+            if (node.forStatement) {
+                this.visitForStatement(node);
             }
             else {
-                buffer = buffer.concat("template += ` " + attr + "`;\n");
+                this.visitChildren(node);
             }
-        }
-    };
-    GenerateCode.prototype.visitEvents = function (node) {
-        node.events.forEach(function (ev) {
-            // buffer = buffer.concat(` ${ev.val}`)
-        });
-    };
-    GenerateCode.prototype.visitIfStatement = function (node) {
-        if (!node.ifStatement)
-            return;
-        var statement = node.ifStatement.val;
-        var statementForTest = statement.slice(2, -2).trim();
-        if (statement.search(/{{[ ]*else if\(/) === 0) {
-            var start = statement.indexOf("else if");
-            var end = statement.lastIndexOf(")") + 1;
-            statement = statement.slice(start, end);
-            statementForTest = "if(false){}" + statement;
-        }
-        else if (statement.search(/{{[ ]*else[ ]*}}/) === 0) {
-            statement = statement.slice(2, -2).trim();
-            statementForTest = "if(false){}" + statement;
-        }
-        else {
-            var start = statement.indexOf("if");
-            var end = statement.lastIndexOf(")") + 1;
-            statement = statement.slice(start, end);
-            statementForTest = statement;
-        }
-        //we know that node.locals contains identifiers
-        //of all declared variables so we redeclare them
-        //to to able to handle errors
-        var locals = "";
-        for (var _i = 0, _a = node.locals; _i < _a.length; _i++) {
-            var local = _a[_i];
-            if (globalVars.search(new RegExp("let " + local)) === -1) {
-                locals += local + ";\n";
-            }
-        }
-        if (mode === "development") {
-            statementForTest = globalVars + locals + statementForTest;
-            try {
-                new Function(statementForTest + "{}")();
-            }
-            catch (e) {
-                console.error(e +
-                    " at line " +
-                    node.ifStatement.line +
-                    ", col " +
-                    node.ifStatement.col +
-                    " " +
-                    ", file " +
-                    this.file +
-                    ", src: " +
-                    node.ifStatement.val);
-            }
-        }
-        buffer += statement + "{\n";
-        //remove ifStatement to avoid recursion
-        node.ifStatement = null;
-        this.visitHTMLElement(node);
-        buffer += "}\n";
-        return true;
-    };
-    GenerateCode.prototype.visitForStatement2 = function (node) {
-        if (!node.ForStatement)
-            return;
-        //end an open-tag-start
-        buffer += "template +=`>`\n";
-        var statement = node.ForStatement.val;
-        var statementForTest;
-        if (statement.search(lexer_1.forEach_Re) > -1) {
-            statement = statement.slice(2, -2).trim();
-            statement = statement.slice(0, statement.lastIndexOf("=>"));
-            buffer += statement + "=>{\n";
-            this.visitChildren(node);
-            buffer += "\n})\n";
-            statementForTest = globalVars + "\n" + statement + "=>{})";
-        }
-        else {
-            statement = statement.slice(2, -2).trim();
-            buffer += statement + "{\n";
-            this.visitChildren(node);
+            buffer += "template += \"</" + node.name + ">\";\n";
             buffer += "}\n";
-            statementForTest = globalVars + "\n" + statement + "{}";
         }
-        if (mode === "development") {
-            try {
-                new Function(statementForTest)();
+        else {
+            buffer += "template += \"<" + node.name + "\";\n";
+            this.visitAttributes(node);
+            buffer += "template += \">\";\n";
+            /*
+                if its selfclosing tag then,
+                we stop here since it does not have
+                children of forstatement
+            */
+            if (node.type === "SelfClosingTag")
+                return;
+            if (node.forStatement) {
+                this.visitForStatement(node);
             }
-            catch (e) {
-                console.error(e +
-                    " at line " +
-                    node.ForStatement.line +
-                    " col " +
-                    node.ForStatement.col +
-                    " " +
-                    node.ForStatement.val);
+            else {
+                this.visitChildren(node);
             }
+            buffer += "template += \"</" + node.name + ">\";\n";
+        }
+    };
+    GenerateCode.prototype.visitDocType = function (node) {
+        buffer += "template += \"" + node.value + "\";\n";
+    };
+    GenerateCode.prototype.visitForStatement = function (node) {
+        var forStatementExpression = node.forStatement.slice(2, -2).trim();
+        buffer += forStatementExpression + "{\n";
+        this.visitChildren(node);
+        buffer += "}\n";
+    };
+    GenerateCode.prototype.visitIfStatement = function (ifStatement) {
+        var expression = ifStatement.substring(2, ifStatement.length - 2).trim();
+        buffer += expression + "{\n";
+    };
+    GenerateCode.prototype.visitSelfClosingTag = function (node) {
+        this.visitTag(node);
+    };
+    GenerateCode.prototype.visitAttributes = function (node) {
+        var attributes = node.attributes;
+        for (var i = 0; i < attributes.length; i++) {
+            var attr = attributes[i];
+            buffer += "template += ` " + attr + "`;\n";
         }
     };
     GenerateCode.prototype.visitText = function (node) {
-        buffer += "template += `" + node.val + "`;\n";
+        buffer += "template += `" + node.value + "`;\n";
+    };
+    GenerateCode.prototype.visitJsCode = function (node) {
+        buffer += "template += `" + node.value + "`;\n";
+    };
+    GenerateCode.prototype.visitInnerHTML = function (node) {
+        buffer += "template += `" + node.value + "`;\n";
     };
     GenerateCode.prototype.visitDynamicData = function (node) {
-        var val = node.val.slice(2, -2).trim();
-        //get a variable from expression like users[0]
-        //let variable = this.extractLocalVariable(val)
-        //check if a variable was declared
-        // if (buffer.search("let " + variable) === -1) {
-        //     this.refErr(node)
-        // }
-        buffer = buffer.concat("template += " + val + ";\n");
-    };
-    GenerateCode.prototype.refErr = function (node) {
-        var msg = node.val + " is not defined at line : " + node.line + " col: " + node.col;
-        throw new ReferenceError(msg);
+        var val = node.value.slice(2, -2);
+        buffer += "template += " + val + ";\n";
     };
     return GenerateCode;
 }());
 function render(tmplateSrsCode, file, data) {
-    /*
-    check if a bin directory for template-files
-    is present, if it's not then create it
-    */
-    let binDir = file.slice(0, file.lastIndexOf("/")) + "/bin";
-    let binTemplateFile = file.slice(file.lastIndexOf("/"), file.lastIndexOf(".html")) + ".js";
-
-    if (mode === "development") {
-        var tokens = new lexer_1.Lexer(tmplateSrsCode, "index.html").tokenize();
-        var AST = JSON.parse(JSON.stringify(new parser_1.Parser(tokens).getAST()));
-        var template = new GenerateCode(AST, data, file).compile();
-
-        if (!fs.realpathSync(binDir, "utf-8"))
-            fs.mkdirSync(binDir);
-        fs.writeFileSync(binDir + binTemplateFile, template);
-
-        return new Function(template + "return template;\n")();
-    }
-    else {
-        let jsCode = fs.readFileSync(binDir + binTemplateFile, "utf-8");
-        return new Function(jsCode + "return template;\n")();
-    }
+    var tokens = new lexer_1.Lexer(tmplateSrsCode, "index.html").tokenize();
+    var AST = JSON.parse(JSON.stringify(new parser_1.Parser(tokens, data).ast));
+    var template = new GenerateCode(AST, data, file).byteCode;
+    var output = new Function(template + "return template;\n")();
+    return output;
+    // let output;
+    // if (mode === "development") {
+    //   let output = new Function(template + "return template;\n")();
+    //   return output;
+    // } else {
+    //   try {
+    //     output = new Function(template + "return template;\n")();
+    //     return output;
+    //   } catch (e) {
+    //     console.error("failed to compile: " + e);
+    //     return output;
+    //     //return "<h1 style='color: red'>failed to compile</h1>"
+    //   }
+    // }
 }
 exports.render = render;
 function engine(filePath, options, callback) {
@@ -282,38 +198,3 @@ function engine(filePath, options, callback) {
     });
 }
 exports.engine = engine;
-/*
------------------------------------------------------
------------------------------------------------------
-*/
-/*
-import { articles } from "./models.js";
-
-let lexerInput = null;
-
-fs.readFile("index.html", "utf8", (err, data) => {
-  if (err) throw err;
-  else lexerInput = data;
-
-  var tokens = new Lexer(lexerInput, "index.html").tokenize();
-
-  //console.log(tokens);
-
-  let ast = new Parser(tokens).getAST();
-
-  let output = new GenerateCode(
-    ast,
-    { articles, recentArticle: articles[0] },
-    "index.html"
-  ).compile();
-
-  output += "return template;";
-  console.log(new Function(output)());
-
-  fs.writeFile("output.html", new Function(output)(), {}, (err) => {
-    if (err) throw err;
-  });
-});
-
-
-*/

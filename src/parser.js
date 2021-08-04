@@ -1,201 +1,145 @@
 "use strict";
 exports.__esModule = true;
 exports.Parser = void 0;
-var fs = require("fs");
 var Parser = /** @class */ (function () {
-    function Parser(tokens) {
-        var _this = this;
-        this.getAST = function () { return _this.ast; };
+    function Parser(tokens, options) {
+        this.tokens = tokens;
+        this.options = options;
         this.ast = {
             type: "Program",
-            children: []
+            value: "Program",
+            name: "Program",
+            forStatement: null,
+            ifStatement: null,
+            attributes: [],
+            children: [],
+            line: null,
+            column: null
         };
-        this.currentNode = this.ast;
-        this.unclosedNodes = [this.currentNode];
+        this.unclosedTagsStack = [this.ast];
+        this.currentTag = this.unclosedTagsStack[this.unclosedTagsStack.length - 1];
+        this.currentCursorState = null;
         for (var i = 0; i < tokens.length; i++) {
             var token = tokens[i];
             //@ ts-ignore
             if (this["parse" + token.type]) {
-                this["parse" + token.type](token);
+                if (token.type === "SelfClosingTag") {
+                    i = this["parse" + token.type](token, i, tokens);
+                }
+                else
+                    this["parse" + token.type](token);
             }
         }
+        // console.log(JSON.stringify(this.ast))
+        // console.log(this.ast.children)
     }
-    Parser.prototype.logError = function (msg) {
-        throw new Error(msg);
-    };
     Parser.prototype.parseOpenTagStart = function (token) {
-        var el = {
-            type: "HtmlElement",
-            name: token.val.substr(1),
+        var tag = {
+            type: "Tag",
+            value: null,
+            name: token.val.substring(1),
             attributes: [],
-            events: [],
-            currentStatus: "attributes",
-            ifStatement: null,
-            ForStatement: null,
-            line: token.pos.row,
-            col: token.pos.col,
             children: [],
-            nextSibling: null,
-            nextElementSibling: null,
-            previousElementSibling: this.previousElementSibling,
-            locals: this.currentNode.locals || []
+            forStatement: null,
+            ifStatement: null,
+            line: token.pos.row,
+            column: token.pos.col
         };
-        this.currentNode.children.push(el);
-        this.unclosedNodes.push(el);
-        this.currentNode = el;
+        this.currentTag.children.push(tag);
+        this.unclosedTagsStack.push(tag);
+        this.currentTag = tag;
     };
-    Parser.prototype.parseAttribute = function (token) {
-        if (this.afterOpTagEnd) {
-            return this.parseAsInnerHTML(token);
-        }
-        this.currentNode.attributes.push(token.val);
-    };
-    Parser.prototype.parseDynamicAttribute = function (token) {
-        if (this.afterOpTagEnd) {
-            return this.parseAsInnerHTML(token);
-        }
-        this.currentNode.attributes.push(token.val);
-    };
-    Parser.prototype.parseEvent = function (token) {
-        if (this.afterOpTagEnd) {
-            return this.parseAsInnerHTML(token);
-        }
-        var el = this.parseSimpleAstElement(token);
-        this.currentNode.events.push(el);
-    };
-    Parser.prototype.parseForStatement = function (token) {
-        if (this.afterOpTagEnd) {
-            return this.parseAsInnerHTML(token);
-        }
-        if (!token.val.startsWith("{{")) {
-            var nativeFor = token.val.replace(/for=['"]/g, "for(");
-            nativeFor = nativeFor.slice(0, -1) + ")";
-            token.val = "{{ " + nativeFor + " }}";
-        }
-        var local = token.val;
-        local = local
-            .slice(local.indexOf("let") + 3, local.search(/[oi][nf]/))
-            .trim();
-        var arr = token.val;
-        arr = arr.slice(arr.indexOf("of") + 2, arr.lastIndexOf(")"));
-        arr = arr.trim();
-        var el = this.parseSimpleAstElement(token);
-        if (this.currentNode.locals) {
-            this.currentNode.locals.push("let " + local + "=" + arr + "[0]");
-        }
-        this.currentNode.ForStatement = el;
+    Parser.prototype.parseOpenTagEnd = function (token) {
+        this.currentCursorState = "parsingInnerHtml";
     };
     Parser.prototype.parseIfStatement = function (token) {
-        if (this.afterOpTagEnd) {
-            return this.parseAsInnerHTML(token);
-        }
-        //transforming non-native tyntax to natice syntax
-        if (token.val.startsWith("if=")) {
-            var nativeIf = token.val;
-            nativeIf = nativeIf.replace(/if=["']/, "if(").slice(0, -1) + ")";
-            token.val = "{{ " + nativeIf + " }}";
-        }
-        var el = this.parseSimpleAstElement(token);
-        this.currentNode.ifStatement = el;
+        this.currentTag.ifStatement = token.val;
     };
-    Parser.prototype.parseElseIfStatement = function (token) {
-        if (this.afterOpTagEnd) {
-            return this.parseAsInnerHTML(token);
-        }
-        if (token.val.startsWith("else-if=")) {
-            var nativeIf = token.val;
-            nativeIf =
-                nativeIf.replace(/else-if=["']/, "else if(").slice(0, -1) + ")";
-            token.val = "{{ " + nativeIf + " }}";
-        }
-        var el = this.parseSimpleAstElement(token);
-        this.currentNode.ifStatement = el;
+    Parser.prototype.parseForStatement = function (token) {
+        this.currentTag.forStatement = token.val;
     };
-    Parser.prototype.parseElseStatement = function (token) {
-        if (this.afterOpTagEnd) {
-            return this.parseAsInnerHTML(token);
-        }
-        if (token.val === "else") {
-            token.val = "{{ " + token.val + " }}";
-        }
-        var el = this.parseSimpleAstElement(token);
-        this.currentNode.ifStatement = el;
-    };
-    Parser.prototype.parseSimpleAstElement = function (token) {
-        return {
-            type: token.type,
-            val: token.val,
-            line: token.pos.row,
-            col: token.pos.col
-        };
-    };
-    Parser.prototype.parseOpenTagEnd = function () {
-        this.currentNode.currentStatus = "innerHTML";
-    };
-    Parser.prototype.parseDynamicData = function (token) {
-        var el = this.parseSimpleAstElement(token);
-        this.currentNode.children.push(el);
-    };
-    Parser.prototype.parseText = function (token) {
-        var token_ = this.parseSimpleAstElement(token);
-        this.currentNode.children.push(token_);
-    };
-    Parser.prototype.parseSelfClosingTag = function () {
-        this.currentNode.type = "HtmlElement";
-        this.currentNode.isSelfClosing = true;
-        this.previousElementSibling = this.unclosedNodes[this.unclosedNodes.length - 1];
-        this.unclosedNodes.pop();
-        this.currentNode = this.unclosedNodes[this.unclosedNodes.length - 1];
-    };
-    Parser.prototype.parseCloseTag = function (token) {
-        var tagName = token.val.slice(2, -1);
-        if (this.unclosedNodes[this.unclosedNodes.length - 1].name === tagName) {
-            this.previousElementSibling = this.unclosedNodes[this.unclosedNodes.length - 1];
-            this.unclosedNodes.pop();
-        }
-        else
-            this.logError(token.val +
-                " does not have a corresponding open tag at line " +
-                token.pos.row +
-                " col " +
-                token.pos.col);
-        this.currentNode = this.unclosedNodes[this.unclosedNodes.length - 1];
-    };
-    Object.defineProperty(Parser.prototype, "afterOpTagEnd", {
-        get: function () {
-            return this.currentNode.currentStatus === "innerHTML";
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Parser.prototype.parseAsInnerHTML = function (token) {
-        token.type = "Text";
-        return this.parseText(token);
+    Parser.prototype.parseAttribute = function (token) {
+        this.currentTag.attributes.push(token.val);
     };
     Parser.prototype.parseInnerHTML = function (token) {
-        return this.parseAsInnerHTML(token);
+        this.currentTag.children.push({
+            type: "InnerHTML",
+            value: token.val,
+            line: token.pos.row,
+            column: token.pos.col
+        });
+    };
+    Parser.prototype.parseDynamicData = function (token) {
+        this.currentTag.children.push({
+            type: "DynamicData",
+            value: token.val,
+            line: token.pos.row,
+            column: token.pos.col
+        });
+    };
+    Parser.prototype.parseJsCode = function (token) {
+        this.currentTag.children.push({
+            type: "JsCode",
+            value: token.val,
+            line: token.pos.row,
+            column: token.pos.col
+        });
     };
     Parser.prototype.parseDocType = function (token) {
-        token.type = "Text";
-        return this.parseText(token);
+        this.currentTag.children.push({
+            type: "DocType",
+            value: token.val,
+            line: token.pos.row,
+            column: token.pos.col
+        });
     };
-    //change a meta-tag into text
-    Parser.prototype.parseMetaTag = function (token) {
-        token.type = "Text";
-        return this.parseText(token);
+    Parser.prototype.parseSelfClosingTag = function (token, start, tokens) {
+        var tag = {
+            type: "SelfClosingTag",
+            value: null,
+            name: token.val.substring(1),
+            line: token.pos.row,
+            column: token.pos.col,
+            attributes: [],
+            children: [],
+            forStatement: null,
+            ifStatement: null
+        };
+        this.currentTag.children.push(tag);
+        var end = null;
+        for (var i = start; i < tokens.length; i++) {
+            var token_1 = tokens[i];
+            if (token_1.type === "OpenTagEnd")
+                break;
+            else if (token_1.type === "Attribute")
+                tag.attributes.push(token_1.val);
+            end = i;
+        }
+        return end;
+    };
+    Parser.prototype.parseText = function (token) {
+        this.currentTag.children.push({
+            type: "Text",
+            value: token.val,
+            line: token.pos.row,
+            column: token.pos.col
+        });
+    };
+    Parser.prototype.parseCloseTag = function (token) {
+        if ("</" + this.currentTag.name + ">" === token.val) {
+            this.unclosedTagsStack.pop();
+            this.currentTag = this.unclosedTagsStack[this.unclosedTagsStack.length - 1];
+        }
+        else {
+            var error = new Error();
+            error.name = "Unexpected CloseTag";
+            error.message = token.val +
+                " Does not have a corresponding" +
+                " OpenTag " + ", At line " + token.pos.row + " column" +
+                " " + token.pos.col;
+            throw error;
+        }
     };
     return Parser;
 }());
 exports.Parser = Parser;
-// let lexerInput = null;
-// fs.readFile("index.html", "utf8", (err, data)=>{
-//     if(err) throw err;
-//     else lexerInput = data;
-//     var tokens = new Lexer(lexerInput, "index.html").tokenize();
-//     //console.log(tokens);
-//     let ast = new Parser(tokens).getAST()
-//     console.log(ast.children[1])
-//     fs.writeFile("ast.json", JSON.stringify(ast.children[1]), {}, (err)=>{
-//         if(err) throw err;
-//     })
-// })

@@ -3,9 +3,7 @@
     "version": "1.0.8",
     "description": "Light Weight Javascript Templating Engine",
     "main": "index.js",
-    "scripts": {
-        "start": "nodemon exampler/index.js"
-    },
+    "scripts": {},
     "keywords": [
         "Javascript",
         "Templating Engine",
